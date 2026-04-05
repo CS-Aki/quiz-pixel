@@ -55,31 +55,31 @@
           <div class="grid md:grid-cols-2 gap-8">
             <div>
               <label class="text-slate-900 text-sm font-medium mb-2 block">First Name</label>
-              <input name="name" type="text" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter name" />
+              <input id="firstName" name="name" type="text" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter name" />
             </div>
             <div>
               <label class="text-slate-900 text-sm font-medium mb-2 block">Last Name</label>
-              <input name="lname" type="text" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter last name" />
+              <input id="lastName" name="lname" type="text" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter last name" />
             </div>
             <div>
               <label class="text-slate-900 text-sm font-medium mb-2 block">Email</label>
-              <input name="email" type="text" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter email" />
+              <input id="email" name="email" type="text" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter email" />
             </div>
             <div>
               <label class="text-slate-900 text-sm font-medium mb-2 block">Username</label>
-              <input name="number" type="number" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter mobile number" />
+              <input id="username" name="number" type="text" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter username" />
             </div>
             <div>
               <label class="text-slate-900 text-sm font-medium mb-2 block">Password</label>
-              <input name="password" type="password" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter password" />
+              <input id="password" name="password" type="password" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter password" />
             </div>
             <div>
               <label class="text-slate-900 text-sm font-medium mb-2 block">Confirm Password</label>
-              <input name="cpassword" type="password" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter confirm password" />
+              <input id="confirmPassword" name="cpassword" type="password" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter confirm password" />
             </div>
           </div>
           <div class="mt-8">
-            <button type="button" class="w-full py-2.5 px-5 text-sm font-medium tracking-wider rounded-sm cursor-pointer text-white bg-blue-600 hover:bg-blue-700 focus:outline-0">
+            <button id="signUpBtn" type="button" class="w-full py-2.5 px-5 text-sm font-medium tracking-wider rounded-sm cursor-pointer text-white bg-blue-600 hover:bg-blue-700 focus:outline-0">
               Sign up
             </button>
           </div>
@@ -89,5 +89,3 @@
     
     <x-footer/>
 </x-layout>
-
-<script src="/scripts/user-register/register.js"></script>

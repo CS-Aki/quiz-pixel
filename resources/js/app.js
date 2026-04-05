@@ -10,3 +10,4 @@ $.ajaxSetup({
 });
 
 import './user-login/login';
+import './user-register/register';

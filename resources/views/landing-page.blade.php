@@ -67,5 +67,4 @@
 
     <x-footer/>
 
-
 </x-layout>

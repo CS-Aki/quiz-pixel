@@ -1,19 +1,28 @@
 import $ from 'jquery';
 
-console.log('login.js loaded');
-console.log('window.$ in login.js =', window.$);
+$(document).ready(function () {
+    $('#signInBtn').on('click', function () {
+       const username = $('#username').val();
+       const password = $('#password').val();
 
-$.ajax({
-    url: '/save-data',
-    type: 'GET',
-    data: {
-        name: 'John',
-        email: 'john@example.com'
-    },
-    success: function(response) {
-        console.log(response);
-    },
-    error: function(error) {
-        console.log(error);
-    }
+        $.ajax({
+            url: '/login-user',
+            type: 'POST',
+            data: {
+                username: username,
+                password: password
+            },
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (xhr) {
+                console.log('Error:', xhr);
+                // $('#ajaxResult').html(`
+                //     <div class="text-red-600">
+                //         AJAX failed
+                //     </div>
+                // `);
+            }
+        });
+    });
 });
