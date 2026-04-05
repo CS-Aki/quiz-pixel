@@ -15,7 +15,7 @@
                         <p class="text-sm text-slate-400 mt-0.5">Build your quiz content and configure settings.</p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button type="button"
+                        <button type="button" id="saveDraftBtn"
                             class="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
                             Save as Draft
                         </button>
@@ -84,44 +84,44 @@
                                 </div>
                             </div>
 
-                            <div class="px-6 py-5">
+                            <div class="question-container px-6 py-5">
                                 <!-- Question Text -->
                                 <input type="text" placeholder="Type your question here..."
-                                    class="w-full text-sm font-medium text-slate-800 placeholder-slate-300 outline-none border-b border-gray-100 focus:border-[#2979FF] pb-2 mb-5 transition" />
+                                    class="question-text w-full text-sm font-medium text-slate-800 placeholder-slate-300 outline-none border-b border-gray-100 focus:border-[#2979FF] pb-2 mb-5 transition" />
 
                                 <!-- Answer Choices -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 choices-container">
                                     <!-- Choice A -->
-                                    <div class="choice-item flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
+                                    <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
                                         <button type="button" 
                                             class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400">
                                         </button>
-                                        <input type="text" placeholder="Choice A"
-                                            class="flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
+                                        <input type="text" placeholder="Choice A" data-choice="A"
+                                            class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
                                     </div>
                                     <!-- Choice B -->
-                                    <div class="choice-item flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
-                                        <button type="button" onclick="setCorrect(this)"
+                                    <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
+                                        <button type="button"
                                             class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400">
                                         </button>
-                                        <input type="text" placeholder="Choice B"
-                                            class="flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
+                                        <input type="text" placeholder="Choice B" data-choice="B"
+                                            class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
                                     </div>
                                     <!-- Choice C -->
-                                    <div class="choice-item flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
-                                        <button type="button" onclick="setCorrect(this)"
+                                    <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
+                                        <button type="button" 
                                             class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400">
                                         </button>
-                                        <input type="text" placeholder="Choice C"
-                                            class="flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
+                                        <input type="text" placeholder="Choice C" data-choice="C"
+                                            class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
                                     </div>
                                     <!-- Choice D -->
-                                    <div class="choice-item flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
-                                        <button type="button" onclick="setCorrect(this)"
+                                    <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
+                                        <button type="button" 
                                             class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400">
                                         </button>
-                                        <input type="text" placeholder="Choice D"
-                                            class="flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
+                                        <input type="text" placeholder="Choice D" data-choice="D"
+                                            class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
                                     </div>
                                 </div>
 
@@ -294,7 +294,7 @@
     </div>
 </div>
 
-@vite('resources/js/quiz/create-quiz-misc.js')
+@vite('resources/js/quiz/create-quiz.js')
 @vite('resources/js/user/logout.js')
 
 </x-layout>
