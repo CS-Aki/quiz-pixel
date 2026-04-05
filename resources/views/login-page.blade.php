@@ -93,5 +93,8 @@
     </div>
 
     <x-footer/>
+
+    @vite('resources/js/user/login.js')
+
 </x-layout>
 

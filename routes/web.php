@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QuizController;
 
 Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
@@ -26,3 +27,5 @@ Route::get('/register', [RegisterController::class, 'index'])->name("to-register
 Route::post('/register-user', [RegisterController::class, 'register'])->name("register");
 
 Route::get('/user-dashboard', [DashboardController::class, 'index'])->name('to-dashboard');
+
+Route::get('/create-quiz', [QuizController::class, 'index'])->name('create-quiz');

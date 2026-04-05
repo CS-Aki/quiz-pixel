@@ -67,4 +67,6 @@
 
     <x-footer/>
 
+    @vite('resources/js/user/logout.js')
+
 </x-layout>

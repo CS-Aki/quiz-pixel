@@ -94,4 +94,7 @@
     </div>
     
     <x-footer/>
+
+   @vite('resources/js/user/register.js')
+
 </x-layout>

@@ -10,6 +10,7 @@ $.ajaxSetup({
     }
 });
 
-import './user-login/login';
-import './user-register/register';
-import './user-logout/logout';
+// import './user-login/login';
+// import './user-register/register';
+// import './user-logout/logout';
+
