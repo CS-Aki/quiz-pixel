@@ -69,6 +69,3 @@
 
 
 </x-layout>
-
-<script src="/scripts/user-login/login.js"></script>
-<script src="/scripts/user-register/register.js"></script>

@@ -10,7 +10,20 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    resolve: {
+        alias: {
+            '$': 'jquery',
+            'jquery': 'jquery',
+        },
+    },
     server: {
+        host: '127.0.0.1',
+        port: 5173,
+        strictPort: true,
+        hmr: {
+            host: '127.0.0.1',
+        },
+        origin: 'http://127.0.0.1:8000',
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },

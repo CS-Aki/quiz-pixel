@@ -89,3 +89,5 @@
     
     <x-footer/>
 </x-layout>
+
+<script src="/scripts/user-register/register.js"></script>
