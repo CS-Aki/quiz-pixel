@@ -12,7 +12,7 @@ $(document).ready(function () {
         const password        = $('#modalPassword').val();
         const confirmPassword = $('#modalPasswordConfirm').val();
 
-        const isValid = validatePasswordFields(password, confirmPassword);
+        const isValid =     (password, confirmPassword);
         if (!isValid) return;
 
         $.ajax({

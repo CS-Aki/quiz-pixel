@@ -30,7 +30,6 @@ class GoogleController extends Controller
                     'email'      => $googleUser->getEmail(),
                     'avatar'     => $googleUser->getAvatar(),
                     'google_id'  => $googleUser->getId(),
-                    'password'   => null,
                 ]
             );
 
