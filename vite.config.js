@@ -17,13 +17,13 @@ export default defineConfig({
         },
     },
     server: {
-        host: '127.0.0.1',
+        host: 'localhost',
         port: 5173,
         strictPort: true,
         hmr: {
-            host: '127.0.0.1',
+            host: 'localhost',
         },
-        origin: 'http://127.0.0.1:8000',
+        origin: 'http://localhost:8000',
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },

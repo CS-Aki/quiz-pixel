@@ -48,12 +48,29 @@
         </div>
 
         <div class="flex max-lg:ml-auto space-x-4 shrink-0">
-            <a href="{{ route("to-login") }}" class="px-4 py-2 text-sm rounded-full font-medium cursor-pointer tracking-wide text-slate-900 border border-gray-400 bg-transparent hover:bg-gray-50 transition-all">
+            
+        @if (!Auth::check())
+            <a href="{{ route('to-login') }}"
+            class="px-4 py-2 text-sm rounded-full font-medium cursor-pointer tracking-wide text-slate-900 border border-gray-400 bg-transparent hover:bg-gray-50 transition-all">
                 Login
             </a>
+
             <a href="{{ route("to-register") }}" class="px-4 py-2 text-sm rounded-full font-medium cursor-pointer tracking-wide text-white border border-blue-600 bg-blue-600 hover:bg-blue-700 transition-all">
                 Sign up
             </a>
+        @else
+            <a href="{{ route("to-dashboard") }}" class="px-4 py-2 text-sm rounded-full font-medium cursor-pointer tracking-wide text-white border border-blue-600 bg-blue-600 hover:bg-blue-700 transition-all">
+                Back to Dashboard
+            </a>
+
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit"
+                    class="px-4 py-2 text-sm rounded-full font-medium cursor-pointer tracking-wide text-slate-900 border border-gray-400 bg-transparent hover:bg-gray-50 transition-all">
+                    Log-out
+                </button>
+            </form>
+        @endif
 
             <button id="toggleOpen" class="lg:hidden cursor-pointer">
                 <svg class="w-7 h-7" fill="#000" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

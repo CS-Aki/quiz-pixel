@@ -9,7 +9,7 @@
       <div class="mx-4 mb-4 -mt-20">
         <form class="max-w-4xl max-md:max-w-xl mx-auto bg-white [box-shadow:0_2px_13px_-6px_rgba(0,0,0,0.4)] sm:p-8 p-4 rounded-md">
           <div class="grid md:grid-cols-2 gap-6">
-            <button type="button"
+            <a href="{{ route('auth.google') }}"
               class="w-full px-4 py-2.5 flex items-center justify-center rounded-md text-slate-900 text-sm font-medium tracking-wider cursor-pointer border-0 outline-0 bg-slate-100 hover:bg-slate-200">
               <svg xmlns="http://www.w3.org/2000/svg" width="22px" fill="#fff" class="inline shrink-0 mr-4" viewBox="0 0 512 512">
                 <path fill="#fbbd00"
@@ -32,7 +32,7 @@
                   data-original="#eb4132" />
               </svg>
               Continue with Google
-            </button>
+            </a>
             <button type="button"
                 class="px-4 py-2.5 flex items-center justify-center cursor-pointer rounded-md text-white text-sm font-medium tracking-wider border-none outline-none bg-blue-800 hover:bg-blue-600">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22px" fill="#fff" class="inline shrink-0 mr-3" viewBox="0 0 167.657 167.657">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
@@ -14,6 +15,11 @@ class RegisterController extends Controller
      */
     public function index()
     {
+        if (Auth::check()) {
+            $user = Auth::user();
+            return view('user-dashboard');
+        }
+
         return view("register-page");
     }
 
