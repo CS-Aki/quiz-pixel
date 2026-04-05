@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
@@ -16,21 +19,35 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
-        $firstName = $request->firstName;
-        $lastName = $request->lastName;
-        $email = $request->email;
-        $username = $request->username;
-        $password = $request->password;
-        $confirmPassword = $request->confirmPassword;
+        $validated = $request->validate([
+            'firstName' => 'required|string|max:255',
+            'lastName' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'username' => 'required|string|max:255|unique:users,username',
+            'password' => 'required|string|min:6'
+        ]); 
 
-        return response()->json([
-            'firstName' => $firstName,
-            'lastName' => $lastName,
-            'email' => $email,
-            'username' => $username,
-            'password' => $password,
-            'confirmPassword' => $confirmPassword,
-        ]);
+        try {
+            $user = User::create([
+                'first_name' =>  $validated['firstName'],
+                'last_name' =>  $validated['lastName'],
+                'email' =>  $validated['email'],
+                'username' =>  $validated['username'],
+                'password' =>  Hash::make($validated['password']),
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Registration Successfully!' 
+            ], 201);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to register user. ',
+                'error' => $e
+            ], 500);
+        }
     }
 
     /**

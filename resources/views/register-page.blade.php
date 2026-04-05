@@ -56,26 +56,32 @@
             <div>
               <label class="text-slate-900 text-sm font-medium mb-2 block">First Name</label>
               <input id="firstName" name="name" type="text" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter name" />
+              <small class="error text-red-500" id="firstNameError"></small>
             </div>
             <div>
               <label class="text-slate-900 text-sm font-medium mb-2 block">Last Name</label>
               <input id="lastName" name="lname" type="text" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter last name" />
+              <small class="error text-red-500" id="lastNameError"></small>
             </div>
             <div>
               <label class="text-slate-900 text-sm font-medium mb-2 block">Email</label>
               <input id="email" name="email" type="text" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter email" />
+              <small class="error text-red-500" id="emailError"></small>
             </div>
             <div>
               <label class="text-slate-900 text-sm font-medium mb-2 block">Username</label>
               <input id="username" name="number" type="text" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter username" />
+              <small class="error text-red-500" id="usernameError"></small>
             </div>
             <div>
               <label class="text-slate-900 text-sm font-medium mb-2 block">Password</label>
               <input id="password" name="password" type="password" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter password" />
+              <small class="error text-red-500" id="passwordError"></small>
             </div>
             <div>
               <label class="text-slate-900 text-sm font-medium mb-2 block">Confirm Password</label>
               <input id="confirmPassword" name="cpassword" type="password" class="bg-slate-100 focus:bg-transparent w-full text-sm text-slate-900 px-4 py-2.5 rounded-sm border border-gray-200 focus:border-blue-600 outline-0 transition-all" placeholder="Enter confirm password" />
+              <small class="error text-red-500" id="confirmPasswordError"></small>
             </div>
           </div>
           <div class="mt-8">
