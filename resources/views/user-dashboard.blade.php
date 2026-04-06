@@ -2,7 +2,7 @@
 <div class="relative bg-[#f7f6f9] h-full min-h-screen">
     <div class="flex items-start">
 
-        <x-quiz.sidebar/>
+        <x-quiz.sidebar currentTab="dashboard"/>
 
         <button id="toggle-sidebar"
             class="lg:hidden w-8 h-8 z-[100] fixed top-[36px] left-[10px] cursor-pointer bg-[#007bff] flex items-center justify-center rounded-full outline-0 transition-all duration-500">
@@ -125,7 +125,7 @@
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                             <h2 class="text-sm font-bold text-slate-800">My Created Quizzes</h2>
-                            <a href="javascript:void(0)" class="text-xs text-[#2979FF] font-medium hover:underline">View all</a>
+                            <a href="{{ route("to-quiz-list") }}" class="text-xs text-[#2979FF] font-medium hover:underline">View all</a>
                         </div>
                         <div class="divide-y divide-gray-50">
                             <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">

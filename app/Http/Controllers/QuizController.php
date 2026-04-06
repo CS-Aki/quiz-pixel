@@ -111,6 +111,48 @@ class QuizController extends Controller
         ]);
     }
 
+    public function quizList(){
+        $userId = Auth::user()->id;
+        $quizzes = Quiz::where('user_id', $userId)->get();
+        return view('quiz-list', compact('quizzes'));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $quiz = Quiz::find($id);
+        $questions = $quiz->questions;
+
+        return view("edit-quiz", compact("quiz", "questions"));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+
+    
     function generateRoomCode()
     {
         $characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -132,35 +174,4 @@ class QuizController extends Controller
         return $code;
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }

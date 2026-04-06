@@ -1,4 +1,5 @@
 <x-layout>
+
 <div class="relative bg-[#f7f6f9] h-full min-h-screen">
     <div class="flex items-start">
         <x-quiz.sidebar currentTab=""/>
@@ -11,13 +12,13 @@
                 <!-- Page Title + Save -->
                 <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h1 class="text-xl font-bold text-slate-800">Create a Quiz</h1>
+                        <h1 class="text-xl font-bold text-slate-800">Edit Quiz</h1>
                         <p class="text-sm text-slate-400 mt-0.5">Build your quiz content and configure settings.</p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button type="button" id="saveDraftBtn"
+                        <button type="button" id="updateBtn"
                             class="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
-                            Save as Draft
+                            Update Quiz
                         </button>
                         <button type="button"
                             class="px-4 py-2 text-sm font-semibold text-white bg-[#2979FF] rounded-xl hover:bg-[#1565C0] transition shadow-sm">
@@ -28,9 +29,9 @@
 
                 <!-- Quiz Title Input -->
                 <div class="bg-white rounded-2xl shadow-sm px-6 py-5 mb-6">
-                    <input type="text" id="quizTitle" placeholder="Enter quiz title..."
+                    <input type="text" id="quizTitle" placeholder="Enter quiz title..." value="{{ $quiz->title }}"
                         class="w-full text-xl font-bold text-slate-800 placeholder-slate-300 outline-none border-b-2 border-transparent focus:border-[#2979FF] pb-2 transition" />
-                    <input type="text" id="quizDescription" placeholder="Add a short description (optional)..."
+                    <input type="text" id="quizDescription" placeholder="Add a short description (optional)..." value="{{ $quiz->description }}"
                         class="w-full text-sm text-slate-500 placeholder-slate-300 outline-none mt-3" />
                 </div>
 
@@ -51,85 +52,106 @@
 
                     <!-- Questions List -->
                     <div id="questionsList" class="space-y-4">
-
                         <!-- Question Card Template (first one pre-loaded) -->
-                        <div class="question-card bg-white rounded-2xl shadow-sm overflow-hidden" data-index="1">
-                            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                                <span class="text-xs font-bold text-[#2979FF] uppercase tracking-widest">Question 1</span>
-                                <div class="flex items-center gap-3">
-                                    <!-- Per-question time override -->
-                                    <div class="flex items-center gap-2 text-xs text-slate-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-slate-400" viewBox="0 0 510 510">
-                                            <g fill-opacity=".9"><path d="M255 0C114.75 0 0 114.75 0 255s114.75 255 255 255 255-114.75 255-255S395.25 0 255 0zm0 459c-112.2 0-204-91.8-204-204S142.8 51 255 51s204 91.8 204 204-91.8 204-204 204z"/><path d="M267.75 127.5H229.5v153l132.6 81.6 20.4-33.15-114.75-68.85z"/></g>
-                                        </svg>
-                                        <input type="number" placeholder="30" min="5" max="300"
-                                            class="time-limit w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center" />
-                                        <span>sec</span>
-                                    </div>
-                                    <!-- Per-question points override -->
-                                    <div class="flex items-center gap-2 text-xs text-slate-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-slate-400" viewBox="0 0 24 24">
-                                            <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 14.93V18h-2v-1.07A4.002 4.002 0 0 1 8 13h2a2 2 0 1 0 2-2c-2.21 0-4-1.79-4-4a4.002 4.002 0 0 1 3-3.87V2h2v1.13A4.002 4.002 0 0 1 16 7h-2a2 2 0 1 0-2 2c2.21 0 4 1.79 4 4a4.002 4.002 0 0 1-3 3.93z"/>
-                                        </svg>
-                                        <input type="number" placeholder="1" min="0" 
-                                            class="points w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center" />
-                                        <span>pts</span>
-                                    </div>
-                                    <!-- Delete -->
-                                    <button class="delete-question-btn text-slate-300 hover:text-red-400 transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                            <path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="question-container px-6 py-5">
-                                <!-- Question Text -->
-                                <input type="text" placeholder="Type your question here..."
-                                    class="question-text w-full text-sm font-medium text-slate-800 placeholder-slate-300 outline-none border-b border-gray-100 focus:border-[#2979FF] pb-2 mb-5 transition" />
-
-                                <!-- Answer Choices -->
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 choices-container">
-                                    <!-- Choice A -->
-                                    <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
-                                        <button type="button" 
-                                            class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400">
+                        @foreach ($questions as $question)
+                            @php
+                                $answerKey = $question->answer_key;
+                            @endphp
+                            <div class="question-card bg-white rounded-2xl shadow-sm overflow-hidden" data-index="{{ $loop->iteration }}">
+                                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                                    <span class="text-xs font-bold text-[#2979FF] uppercase tracking-widest">Question {{ $loop->iteration }}</span>
+                                    <div class="flex items-center gap-3">
+                                        <!-- Per-question time override -->
+                                        <div class="flex items-center gap-2 text-xs text-slate-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-slate-400" viewBox="0 0 510 510">
+                                                <g fill-opacity=".9"><path d="M255 0C114.75 0 0 114.75 0 255s114.75 255 255 255 255-114.75 255-255S395.25 0 255 0zm0 459c-112.2 0-204-91.8-204-204S142.8 51 255 51s204 91.8 204 204-91.8 204-204 204z"/><path d="M267.75 127.5H229.5v153l132.6 81.6 20.4-33.15-114.75-68.85z"/></g>
+                                            </svg>
+                                            <input type="number" placeholder="30" min="5" max="300" value="{{ $question->time_limit }}"
+                                                class="time-limit w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center" />
+                                            <span>sec</span>
+                                        </div>
+                                        <!-- Per-question points override -->
+                                        <div class="flex items-center gap-2 text-xs text-slate-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-slate-400" viewBox="0 0 24 24">
+                                                <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 14.93V18h-2v-1.07A4.002 4.002 0 0 1 8 13h2a2 2 0 1 0 2-2c-2.21 0-4-1.79-4-4a4.002 4.002 0 0 1 3-3.87V2h2v1.13A4.002 4.002 0 0 1 16 7h-2a2 2 0 1 0-2 2c2.21 0 4 1.79 4 4a4.002 4.002 0 0 1-3 3.93z"/>
+                                            </svg>
+                                            <input type="number" placeholder="1" min="0" {{ $question->points }}
+                                                class="points w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center" />
+                                            <span>pts</span>
+                                        </div>
+                                        <!-- Delete -->
+                                        <button class="delete-question-btn text-slate-300 hover:text-red-400 transition">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                                <path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/>
+                                            </svg>
                                         </button>
-                                        <input type="text" placeholder="Choice A" data-choice="A"
-                                            class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
-                                    </div>
-                                    <!-- Choice B -->
-                                    <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
-                                        <button type="button"
-                                            class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400">
-                                        </button>
-                                        <input type="text" placeholder="Choice B" data-choice="B"
-                                            class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
-                                    </div>
-                                    <!-- Choice C -->
-                                    <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
-                                        <button type="button" 
-                                            class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400">
-                                        </button>
-                                        <input type="text" placeholder="Choice C" data-choice="C"
-                                            class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
-                                    </div>
-                                    <!-- Choice D -->
-                                    <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
-                                        <button type="button" 
-                                            class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400">
-                                        </button>
-                                        <input type="text" placeholder="Choice D" data-choice="D"
-                                            class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
                                     </div>
                                 </div>
 
-                                <p class="text-xs text-slate-400 mt-3">
-                                    <span class="text-green-500 font-semibold">●</span> Click the circle next to the correct answer
-                                </p>
+                                <div class="question-container px-6 py-5">
+                                    <!-- Question Text -->
+                                    <input type="text" placeholder="Type your question here..." value="{{ $question->question }}"
+                                        class="question-text w-full text-sm font-medium text-slate-800 placeholder-slate-300 outline-none border-b border-gray-100 focus:border-[#2979FF] pb-2 mb-5 transition" />
+
+                                    <!-- Answer Choices -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 choices-container">
+                                        <!-- Choice A -->
+                                        <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
+                                            <button type="button" 
+                                                class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400
+                                                {{ $answerKey === "A" ? 'bg-green-500 border-green-500' : ''}}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 fill-white" viewBox="0 0 24 24" {{ $answerKey === "A" ? "" : "hidden" }}>
+                                                    <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                                </svg>
+                                            </button>
+                                            
+                                            <input type="text" placeholder="Choice A" data-choice="A" value="{{ $question->choice_a }}"
+                                                class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
+                                        </div>
+                                        <!-- Choice B -->
+                                        <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
+                                            <button type="button"
+                                                class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400
+                                                {{ $answerKey === "B" ? 'bg-green-500 border-green-500' : ''}}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 fill-white" viewBox="0 0 24 24" {{ $answerKey === "B" ? "" : "hidden" }}>
+                                                    <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                                </svg>
+                                            </button>
+                                            <input type="text" placeholder="Choice B" data-choice="B" value="{{ $question->choice_b }}"
+                                                class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
+                                        </div>
+                                        <!-- Choice C -->
+                                        <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
+                                            <button type="button" 
+                                                class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400
+                                                {{ $answerKey === "C" ? 'bg-green-500 border-green-500' : ''}}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 fill-white" viewBox="0 0 24 24" {{ $answerKey === "C" ? "" : "hidden" }}>
+                                                    <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                                </svg>
+                                            </button>
+                                            <input type="text" placeholder="Choice C" data-choice="C" value="{{ $question->choice_c }}"
+                                                class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
+                                        </div>
+                                        <!-- Choice D -->
+                                        <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
+                                            <button type="button" 
+                                                class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400
+                                                {{ $answerKey === "D" ? 'bg-green-500 border-green-500' : ''}}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 fill-white" viewBox="0 0 24 24" {{ $answerKey === "D" ? "" : "hidden" }}>
+                                                    <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                                </svg>
+                                            </button>
+                                            <input type="text" placeholder="Choice D" data-choice="D" value="{{ $question->choice_d }}"
+                                                class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
+                                        </div>
+                                    </div>
+
+                                    <p class="text-xs text-slate-400 mt-3">
+                                        <span class="text-green-500 font-semibold">●</span> Click the circle next to the correct answer
+                                    </p>
+                                </div>
                             </div>
-                        </div>
+                        @endforeach
 
                     </div>
 

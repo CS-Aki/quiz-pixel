@@ -30,3 +30,5 @@ Route::get('/user-dashboard', [DashboardController::class, 'index'])->name('to-d
 
 Route::get('/to-create-quiz', [QuizController::class, 'create'])->name('to-create-quiz');
 Route::post('/save-quiz', [QuizController::class, 'store'])->name('save-quiz');
+Route::get('/to-quiz-list', [QuizController::class, 'quizList'])->name('to-quiz-list');
+Route::get('/to-edit-quiz/{id}', [QuizController::class, 'edit'])->name('to-edit-quiz');
