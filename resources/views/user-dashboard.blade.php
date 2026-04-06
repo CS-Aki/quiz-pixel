@@ -128,30 +128,43 @@
                             <a href="{{ route("to-quiz-list") }}" class="text-xs text-[#2979FF] font-medium hover:underline">View all</a>
                         </div>
                         <div class="divide-y divide-gray-50">
-                            <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">
-                                <div>
-                                    <p class="text-sm font-medium text-slate-800">World Capitals Quiz</p>
-                                    <p class="text-xs text-slate-400">15 questions · 42 players</p>
+                            @foreach ($quizzes as $quiz)
+                                @php
+                                    $questionCount = count($quiz->questions);
+                                @endphp
+
+                                {{-- Active --}}
+                                @if ($quiz->status === 'published')
+                                    <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">
+                                        <div>
+                                            <p class="text-sm font-medium text-slate-800">{{ $quiz->title }}</p>
+                                            <p class="text-xs text-slate-400">{{ $questionCount }} questions</p>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-semibold px-3 py-1 bg-green-100 text-green-700 rounded-full">Active</span>
+                                            <a href="{{ route('to-edit-quiz', ['id' => $quiz->id]) }}" class="text-slate-400 hover:text-[#2979FF] transition">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75l11-11.03-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                @if ($quiz->status === 'draft')
+                                <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-800">{{ $quiz->title }}</p>
+                                        <p class="text-xs text-slate-400">{{ $questionCount }} questions</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs font-semibold px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">Draft</span>
+                                        <a href="{{ route('to-edit-quiz', ['id' => $quiz->id]) }}" class="text-slate-400 hover:text-[#2979FF] transition">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75l11-11.03-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                        </a>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs font-semibold px-3 py-1 bg-green-100 text-green-700 rounded-full">Active</span>
-                                    <button class="text-slate-400 hover:text-[#2979FF] transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75l11-11.03-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">
-                                <div>
-                                    <p class="text-sm font-medium text-slate-800">Tech Trivia 2026</p>
-                                    <p class="text-xs text-slate-400">20 questions · 18 players</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs font-semibold px-3 py-1 bg-green-100 text-green-700 rounded-full">Active</span>
-                                    <button class="text-slate-400 hover:text-[#2979FF] transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75l11-11.03-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                                    </button>
-                                </div>
-                            </div>
+                                @endif
+                            @endforeach
+
                             <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">
                                 <div>
                                     <p class="text-sm font-medium text-slate-800">PH History Basics</p>
@@ -159,18 +172,6 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <span class="text-xs font-semibold px-3 py-1 bg-slate-100 text-slate-500 rounded-full">Closed</span>
-                                    <button class="text-slate-400 hover:text-[#2979FF] transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75l11-11.03-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">
-                                <div>
-                                    <p class="text-sm font-medium text-slate-800">Pop Culture 2025</p>
-                                    <p class="text-xs text-slate-400">12 questions · 5 players</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs font-semibold px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">Draft</span>
                                     <button class="text-slate-400 hover:text-[#2979FF] transition">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75l11-11.03-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                                     </button>
