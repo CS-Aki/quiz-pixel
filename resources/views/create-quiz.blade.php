@@ -19,7 +19,7 @@
                             class="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
                             Save as Draft
                         </button>
-                        <button type="button"
+                        <button type="button" id="publishBtn"
                             class="px-4 py-2 text-sm font-semibold text-white bg-[#2979FF] rounded-xl hover:bg-[#1565C0] transition shadow-sm">
                             Publish Quiz
                         </button>
@@ -32,6 +32,7 @@
                         class="w-full text-xl font-bold text-slate-800 placeholder-slate-300 outline-none border-b-2 border-transparent focus:border-[#2979FF] pb-2 transition" />
                     <input type="text" id="quizDescription" placeholder="Add a short description (optional)..."
                         class="w-full text-sm text-slate-500 placeholder-slate-300 outline-none mt-3" />
+                        
                 </div>
 
                 <!-- Tabs -->
@@ -74,13 +75,22 @@
                                         <input type="number" placeholder="1" min="0" 
                                             class="points w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center" />
                                         <span>pts</span>
+                                        <input type="hidden" value="0" class="qid"/>
                                     </div>
                                     <!-- Delete -->
-                                    <button class="delete-question-btn text-slate-300 hover:text-red-400 transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                            <path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/>
-                                        </svg>
-                                    </button>
+                                   <form action="{{ route('delete-question', ['id' => 0]) }}"
+                                        method="POST"
+                                        class="delete-question-form inline">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="button"
+                                            class="delete-question-btn text-slate-300 hover:text-red-400 transition">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                                <path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/>
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
 
@@ -142,7 +152,9 @@
                         Add Question
                     </button>
                 </div>
-
+                
+                <input type="hidden" value="0" id="quizId" />
+                <input type="hidden" value="" id="quizCode" />
                 <!-- ── TAB: SETTINGS ── -->
                 <div id="tabSettings" class="hidden space-y-4">
 

@@ -20,7 +20,7 @@
                             class="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
                             Update Quiz
                         </button>
-                        <button type="button"
+                        <button type="button" id="publishBtn"
                             class="px-4 py-2 text-sm font-semibold text-white bg-[#2979FF] rounded-xl hover:bg-[#1565C0] transition shadow-sm">
                             Publish Quiz
                         </button>
@@ -69,22 +69,32 @@
                                             <input type="number" placeholder="30" min="5" max="300" value="{{ $question->time_limit }}"
                                                 class="time-limit w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center" />
                                             <span>sec</span>
+                                            
                                         </div>
                                         <!-- Per-question points override -->
                                         <div class="flex items-center gap-2 text-xs text-slate-500">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-slate-400" viewBox="0 0 24 24">
                                                 <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 14.93V18h-2v-1.07A4.002 4.002 0 0 1 8 13h2a2 2 0 1 0 2-2c-2.21 0-4-1.79-4-4a4.002 4.002 0 0 1 3-3.87V2h2v1.13A4.002 4.002 0 0 1 16 7h-2a2 2 0 1 0-2 2c2.21 0 4 1.79 4 4a4.002 4.002 0 0 1-3 3.93z"/>
                                             </svg>
-                                            <input type="number" placeholder="1" min="0" {{ $question->points }}
+                                            <input type="number" placeholder="1" min="0" value="{{ $question->points }}"
                                                 class="points w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center" />
                                             <span>pts</span>
+                                            <input type="text" value="{{ $question->id }}" class="qid" />
                                         </div>
                                         <!-- Delete -->
-                                        <button class="delete-question-btn text-slate-300 hover:text-red-400 transition">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                                <path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/>
-                                            </svg>
-                                        </button>
+                                        <form action="{{ route('delete-question', ['id' => $question->id]) }}"
+                                            method="POST"
+                                            class="delete-question-form inline">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="submit"
+                                                class="delete-question-btn text-slate-300 hover:text-red-400 transition">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                                    <path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/>
+                                                </svg>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
 
@@ -95,6 +105,7 @@
 
                                     <!-- Answer Choices -->
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 choices-container">
+                                        
                                         <!-- Choice A -->
                                         <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
                                             <button type="button" 
@@ -165,6 +176,8 @@
                     </button>
                 </div>
 
+                <input type="text" value="{{ $quiz->id }}" id="quizId" hidden/>
+                 <input type="text" value="{{ $quiz->code }}" id="quizCode" hidden/>
                 <!-- ── TAB: SETTINGS ── -->
                 <div id="tabSettings" class="hidden space-y-4">
 
@@ -316,7 +329,7 @@
     </div>
 </div>
 
-@vite('resources/js/quiz/create-quiz.js')
+@vite('resources/js/quiz/update-quiz.js')
 @vite('resources/js/user/logout.js')
 
 </x-layout>

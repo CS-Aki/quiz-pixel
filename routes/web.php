@@ -32,3 +32,5 @@ Route::get('/to-create-quiz', [QuizController::class, 'create'])->name('to-creat
 Route::post('/save-quiz', [QuizController::class, 'store'])->name('save-quiz');
 Route::get('/to-quiz-list', [QuizController::class, 'quizList'])->name('to-quiz-list');
 Route::get('/to-edit-quiz/{id}', [QuizController::class, 'edit'])->name('to-edit-quiz');
+Route::delete('/delete-question/{id}', [QuizController::class, 'deleteQuestion'])->name("delete-question");
+Route::post('/publish-quiz', [QuizController::class, 'publishQuiz'])->name('publish-quiz');

@@ -28,86 +28,91 @@ class QuizController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         $userId = Auth::user()->id;
-        $code = $this->generateUniqueRoomCode();
         $status = $request->status;
         $quizList = $request->quizList;
         $quizTitle = $request->quizTitle;
         $quizDescription = $request->quizDescription;
         $userLimit = $request->userLimit;
-
-        $isQuizSaved = false;
-        $isQuestionsSaved = false;
-        $quizId = null;
+        $quizId = $request->quizId;
 
         try {
-            
-            $quiz = Quiz::create([
-                'user_id' => $userId,
-                'code' => $code,
-                'title' => $quizTitle,
-                'description' => $quizDescription,
-                'status' => $status,
-                'user_limit' => $userLimit,
-            ]);
+            $quiz = Quiz::updateOrCreate(
+                [
+                    'id' => $quizId,
+                ],
+                [
+                    'user_id' => $userId,
+                    'code' => $request->quizId != 0 ? $request->quizCode : $this->generateUniqueRoomCode(),
+                    'title' => $quizTitle,
+                    'description' => $quizDescription,
+                    'status' => $status,
+                    'user_limit' => $userLimit,
+                ]
+            );
 
             $quizId = $quiz->id;
-
-            $isQuizSaved = true;
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to save quiz. ',
+                'message' => 'Failed to save quiz.',
                 'error' => $e->getMessage()
             ]);
         }
 
-        if ($isQuizSaved) {
-            try {
-                foreach ($quizList as $quiz){
-                    $choiceA = $quiz['choices']['A'];
-                    $choiceB = $quiz['choices']['B'];
-                    $choiceC = $quiz['choices']['C'];
-                    $choiceD = $quiz['choices']['D'];
+        $savedQuestions = [];
 
-                    Question::create([
-                        'quiz_id' => $quizId,
-                        'question' => $quiz['question'],
-                        'choice_a' => $choiceA,
-                        'choice_b' =>  $choiceB,
-                        'choice_c' =>  $choiceC,
-                        'choice_d' => $choiceD,
-                        'answer_key' => $quiz['answerKey'],
-                        'time_limit' => $quiz['timeLimit'],
-                        'points' => $quiz['points'],
-                    ]);
+        try {
+            foreach ($quizList as $questionData) {
+                $data = [
+                    'quiz_id' => $quizId,
+                    'question' => $questionData['question'],
+                    'choice_a' => $questionData['choices']['A'],
+                    'choice_b' => $questionData['choices']['B'],
+                    'choice_c' => $questionData['choices']['C'],
+                    'choice_d' => $questionData['choices']['D'],
+                    'answer_key' => $questionData['answerKey'],
+                    'time_limit' => $questionData['timeLimit'],
+                    'points' => $questionData['points'],
+                ];
+
+                if (!empty($questionData['id']) && $questionData['id'] > 0) {
+                    $question = Question::where('id', $questionData['id'])
+                        ->where('quiz_id', $quizId)
+                        ->first();
+
+                    if ($question) {
+                        $question->update($data);
+                    } else {
+                        $question = Question::create($data);
+                    }
+                } else {
+                    $question = Question::create($data);
                 }
 
-                $isQuizSaved = true;
-
-            } catch (\Exception $e) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to save question. ',
-                    'error' => $e->getMessage(),
-                    'quizList' => $quizList,
-                    // 'choices' => $temp,
-                ]); 
+                $savedQuestions[] = [
+                    'questionNum' => $questionData['questionNum'],
+                    'id' => $question->id,
+                ];
             }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save question.',
+                'error' => $e->getMessage(),
+                'quizList' => $quizList,
+            ]);
         }
 
-        return response([
+        return response()->json([
             'success' => true,
+            'id' => $quizId,
+            'code' => $quiz->code,
             'status' => $status,
-            'code' => $code,
-            'userId' => $userId,
-            'quizList' => $quizList,
-            'quizTitle' => $quizTitle,
-            'quizDescription' => $quizDescription,
-            'userLimit', $userLimit,
+            'questions' => $savedQuestions,
         ]);
     }
 
@@ -117,6 +122,21 @@ class QuizController extends Controller
         return view('quiz-list', compact('quizzes'));
     }
 
+    public function deleteQuestion(string $id){
+        $question = Question::find($id);
+        $question->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Question deleted successfully.',
+        ]);
+    }
+
+    public function publishQuiz(Request $request){
+        $quiz = Quiz::find($request->quizId);
+        $quiz->status = "published";
+        $quiz->save();
+    }
     /**
      * Display the specified resource.
      */

@@ -1,8 +1,8 @@
 import { $ } from "jquery";
 import Swal from 'sweetalert2';
 
-let questionCount = document.querySelectorAll('.question-card').length || 1;
 let quizList = [];
+let questionCount = 0;
 
 function switchTab(tab) {
     const content = document.getElementById('tabContent');
@@ -33,27 +33,11 @@ function switchTab(tab) {
     }
 }
 
-function renumberQuestions() {
-    const cards = document.querySelectorAll('.question-card');
-
-    cards.forEach((card, i) => {
-        const label = card.querySelector('span.text-xs.font-bold');
-        if (label) {
-            label.textContent = `Question ${i + 1}`;
-        }
-        card.dataset.index = i + 1;
-    });
-
-    questionCount = cards.length;
-}
-
 function addQuestion() {
     questionCount++;
 
     const list = document.getElementById('questionsList');
     if (!list) return;
-
-    const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
     const card = document.createElement('div');
     card.className = 'question-card bg-white rounded-2xl shadow-sm overflow-hidden';
@@ -83,20 +67,13 @@ function addQuestion() {
                         min="0"
                         class="points w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center"
                     />
-                    <input type="hidden" value="0" class="qid" />
+                    <input type="text" value="{{ $question->id }}" class="qid" />
                     <span>pts</span>
                 </div>
 
-                <form action="/delete-question/0" method="POST" class="delete-question-form inline">
-                    <input type="hidden" name="_token" value="${csrfToken}">
-                    <input type="hidden" name="_method" value="DELETE">
-
-                    <button type="button" class="delete-question-btn text-slate-300 hover:text-red-400 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                            <path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/>
-                        </svg>
-                    </button>
-                </form>
+                <button type="button" class="delete-question-btn text-slate-300 hover:text-red-400 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/></svg>
+                </button>
             </div>
         </div>
 
@@ -109,7 +86,7 @@ function addQuestion() {
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 choices-container">
                 ${['A', 'B', 'C', 'D'].map((l) => `
-                    <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition group">
+                    <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl hover:border-[#2979FF]/30 transition">
                         <button type="button" class="correct-btn w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center transition hover:border-green-400"></button>
                         <input type="text" placeholder="Choice ${l}" data-choice="${l}" class="choice-item flex-1 text-sm text-slate-700 placeholder-slate-300 outline-none bg-transparent" />
                     </div>
@@ -127,6 +104,32 @@ function addQuestion() {
     renumberQuestions();
 }
 
+function deleteQuestion(btn) {
+    const cards = document.querySelectorAll('.question-card');
+    if (cards.length === 1) return;
+    
+    const card = btn.closest('.question-card');
+    if (!card) return;
+
+    card.remove();
+    renumberQuestions();
+}
+
+function renumberQuestions() {
+    const cards = document.querySelectorAll('.question-card');
+
+    cards.forEach((card, i) => {
+        const label = card.querySelector('span');
+        if (label) {
+            label.textContent = `Question ${i + 1}`;
+        }
+
+        card.dataset.index = i + 1;
+    });
+
+    questionCount = cards.length;
+}
+
 function setCorrect(btn) {
     const container = btn.closest('.choices-container');
     if (!container) return;
@@ -134,6 +137,12 @@ function setCorrect(btn) {
     container.querySelectorAll('.correct-btn').forEach((b) => {
         b.classList.remove('bg-green-500', 'border-green-500');
         b.innerHTML = '';
+
+        const choiceItem = b.closest('.choice-item');
+        if (choiceItem) {
+            choiceItem.classList.remove('border-green-400', 'bg-green-50');
+            choiceItem.classList.add('border-gray-100');
+        }
     });
 
     btn.classList.add('bg-green-500', 'border-green-500');
@@ -142,6 +151,12 @@ function setCorrect(btn) {
             <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
         </svg>
     `;
+
+    const choiceItem = btn.closest('.choice-item');
+    if (choiceItem) {
+        choiceItem.classList.add('border-green-400', 'bg-green-50');
+        choiceItem.classList.remove('border-gray-100');
+    }
 }
 
 function toggleSwitch(btn) {
@@ -164,14 +179,16 @@ function toggleSwitch(btn) {
     }
 }
 
-function saveCurrQuiz() {
+function saveCurrQuiz(){
     let updatedQuizList = [];
 
     $('.question-card').each(function (i) {
         let question = $(this).find('.question-text').val();
         let timeLimit = $(this).find('.time-limit').val() || 30;
         let points = $(this).find('.points').val() || 1;
-        let id = parseInt($(this).find('.qid').val(), 10) || 0;
+        let id = $(this).find('.qid').val() | 0;
+        // console.log(id);
+        // console.log(points);
 
         let choices = {};
         $(this).find('.choice-item').each(function () {
@@ -195,95 +212,12 @@ function saveCurrQuiz() {
     });
 
     quizList = updatedQuizList;
+    // console.table(quizList);
     return quizList;
 }
 
-function saveQuiz(status) {
-    const currQuizList = saveCurrQuiz();
-    const quizTitle = $('#quizTitle').val();
-    const quizDescription = $('#quizDescription').val();
-    const userLimit = $('#participantLimit').val();
-    const quizId = $('#quizId').val();
-    const quizCode = $('#quizCode').val();
-
-    Swal.fire({
-        title: status === 'publish' ? 'Publish Quiz?' : 'Save Quiz?',
-        text: status === 'publish'
-            ? 'Do you want to publish this quiz now?'
-            : 'Do you want to save this quiz as draft?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: status === 'publish' ? 'Yes, publish it!' : 'Yes, save it!',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#2563eb'
-    }).then((result) => {
-        if (!result.isConfirmed) return;
-
-        Swal.fire({
-            title: status === 'publish' ? 'Publishing...' : 'Saving...',
-            text: 'Please wait',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-
-        $.ajax({
-            url: '/save-quiz',
-            type: 'POST',
-            data: {
-                status: status,
-                quizTitle: quizTitle,
-                quizDescription: quizDescription,
-                quizList: currQuizList,
-                userLimit: userLimit,
-                quizId: quizId,
-                quizCode: quizCode,
-            },
-            success: function (response) {
-                if (response.id) {
-                    $('#quizId').val(response.id);
-                }
-
-                if (response.code) {
-                    $('#quizCode').val(response.code);
-                }
-
-                if (response.questions && Array.isArray(response.questions)) {
-                    response.questions.forEach((question) => {
-                        $('.question-card').each(function () {
-                            let questionNum = $(this).data('index');
-
-                            if (parseInt(questionNum) === parseInt(question.questionNum)) {
-                                $(this).find('.qid').val(question.id);
-                            }
-                        });
-                    });
-                }
-
-                Swal.fire({
-                    title: status === 'publish' ? 'Published!' : 'Saved!',
-                    text: status === 'publish'
-                        ? 'Your quiz has been published successfully.'
-                        : 'Your quiz draft has been saved successfully.',
-                    icon: 'success',
-                    confirmButtonColor: '#16a34a'
-                });
-            },
-            error: function (xhr) {
-                Swal.fire({
-                    title: 'Error!',
-                    text: xhr.responseJSON?.message || 'Something went wrong',
-                    icon: 'error'
-                });
-            }
-        });
-    });
-}
 
 $(document).ready(function () {
-    renumberQuestions();
-
     $(document).on('click', '.correct-btn', function () {
         setCorrect(this);
     });
@@ -291,31 +225,11 @@ $(document).ready(function () {
     $(document).on('click', '.delete-question-btn', function (e) {
         e.preventDefault();
 
-        const cards = document.querySelectorAll('.question-card');
-        if (cards.length === 1) {
-            Swal.fire({
-                title: 'Cannot delete',
-                text: 'At least one question is required.',
-                icon: 'warning'
-            });
-            return;
-        }
-
-        const form = $(this).closest('.delete-question-form');
-        const card = $(this).closest('.question-card');
-        const qid = parseInt(card.find('.qid').val(), 10) || 0;
-
-        if (qid <= 0) {
-            card.remove();
-            renumberQuestions();
-            return;
-        }
-
-        form.attr('action', `/delete-question/${qid}`);
+        let form = $(this).closest('.delete-question-form');
 
         Swal.fire({
             title: 'Are you sure?',
-            text: 'This question will be permanently deleted.',
+            text: "This question will be permanently deleted.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ef4444',
@@ -323,31 +237,25 @@ $(document).ready(function () {
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (!result.isConfirmed) return;
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function () {
+                        form.closest('.question-card').remove();
+                    },
+                    error: function (xhr) {
+                        console.error(xhr.responseText);
 
-            $.ajax({
-                url: form.attr('action'),
-                type: 'POST',
-                data: form.serialize(),
-                success: function () {
-                    card.remove();
-                    renumberQuestions();
-
-                    Swal.fire({
-                        title: 'Deleted!',
-                        text: 'The question has been removed.',
-                        icon: 'success',
-                        confirmButtonColor: '#16a34a'
-                    });
-                },
-                error: function (xhr) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: xhr.responseJSON?.message || 'Failed to delete question.',
-                        icon: 'error'
-                    });
-                }
-            });
+                        Swal.fire(
+                            'Error!',
+                            'Failed to delete question.',
+                            'error'
+                        );
+                    }
+                });
+            }
         });
     });
 
@@ -367,11 +275,99 @@ $(document).ready(function () {
         toggleSwitch(this);
     });
 
-    $(document).on('click', '#saveDraftBtn', function () {
-        saveQuiz('draft');
+    $(document).on('click', '#updateBtn', function () {
+
+        let status = "draft";
+        let currQuizList = saveCurrQuiz();
+        let quizTitle = $('#quizTitle').val();
+        let quizDescription = $('#quizDescription').val();
+        let userLimit = $('#participantLimit').val();
+        let quizId = $('#quizId').val();
+        let quizCode = $('#quizCode').val();
+
+        Swal.fire({
+            title: 'Save Quiz?',
+            text: 'Do you want to save your changes?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#2563eb'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                // 🔄 Show loading
+                Swal.fire({
+                    title: 'Saving...',
+                    text: 'Please wait',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: '/save-quiz',
+                    type: 'POST',
+                    data: {
+                        status: status,
+                        quizTitle: quizTitle,
+                        quizDescription: quizDescription,
+                        quizList: currQuizList,
+                        userLimit: userLimit,
+                        quizId: quizId,
+                        quizCode: quizCode,
+                    },
+                    success: function (response) {
+                        console.table(response);
+
+                        Swal.fire({
+                            title: 'Saved!',
+                            text: 'Your quiz has been updated successfully.',
+                            icon: 'success',
+                            confirmButtonColor: '#16a34a'
+                        });
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: xhr.responseJSON?.message || 'Something went wrong',
+                            icon: 'error'
+                        });
+                    }
+                });
+
+            }
+        });
+
     });
 
     $(document).on('click', '#publishBtn', function () {
-        saveQuiz('published');
+        let quizId = $('#quizId').val();
+
+        $.ajax({
+            url: '/publish-quiz',
+            type: 'POST',
+            data: {
+                quizId: quizId,
+            },
+            success: function (response) {
+                console.log(response);
+
+                Swal.fire({
+                    title: 'Published!',
+                    text: 'Your quiz has been published successfully.',
+                    icon: 'success',
+                    confirmButtonColor: '#16a34a'
+                });
+            },
+            error: function (xhr) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: xhr.responseJSON?.message || 'Something went wrong',
+                    icon: 'error'
+                });
+            }
+        });
     });
 });
