@@ -28,4 +28,5 @@ Route::post('/register-user', [RegisterController::class, 'register'])->name("re
 
 Route::get('/user-dashboard', [DashboardController::class, 'index'])->name('to-dashboard');
 
-Route::get('/create-quiz', [QuizController::class, 'create'])->name('create-quiz');
+Route::get('/to-create-quiz', [QuizController::class, 'create'])->name('to-create-quiz');
+Route::post('/save-quiz', [QuizController::class, 'store'])->name('save-quiz');

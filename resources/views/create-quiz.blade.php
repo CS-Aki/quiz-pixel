@@ -63,7 +63,7 @@
                                             <g fill-opacity=".9"><path d="M255 0C114.75 0 0 114.75 0 255s114.75 255 255 255 255-114.75 255-255S395.25 0 255 0zm0 459c-112.2 0-204-91.8-204-204S142.8 51 255 51s204 91.8 204 204-91.8 204-204 204z"/><path d="M267.75 127.5H229.5v153l132.6 81.6 20.4-33.15-114.75-68.85z"/></g>
                                         </svg>
                                         <input type="number" placeholder="30" min="5" max="300"
-                                            class="w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center" />
+                                            class="time-limit w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center" />
                                         <span>sec</span>
                                     </div>
                                     <!-- Per-question points override -->
@@ -71,8 +71,8 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-slate-400" viewBox="0 0 24 24">
                                             <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 14.93V18h-2v-1.07A4.002 4.002 0 0 1 8 13h2a2 2 0 1 0 2-2c-2.21 0-4-1.79-4-4a4.002 4.002 0 0 1 3-3.87V2h2v1.13A4.002 4.002 0 0 1 16 7h-2a2 2 0 1 0-2 2c2.21 0 4 1.79 4 4a4.002 4.002 0 0 1-3 3.93z"/>
                                         </svg>
-                                        <input type="number" placeholder="10" min="0"
-                                            class="w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center" />
+                                        <input type="number" placeholder="1" min="0" 
+                                            class="points w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center" />
                                         <span>pts</span>
                                     </div>
                                     <!-- Delete -->
@@ -282,7 +282,7 @@
                                 <p class="text-sm font-medium text-slate-700">Max Players</p>
                                 <p class="text-xs text-slate-400">Leave blank for unlimited</p>
                             </div>
-                            <input type="number" placeholder="∞" min="1"
+                            <input type="number" placeholder="∞" min="1" id="participantLimit"
                                 class="w-20 text-center px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#2979FF]" />
                         </div>
                     </div>

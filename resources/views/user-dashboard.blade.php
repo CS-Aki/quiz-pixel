@@ -33,7 +33,7 @@
                             </svg>
                             Join a Quiz Room
                         </button>
-                        <a href="{{ route("create-quiz") }}"
+                        <a href="{{ route("to-create-quiz") }}"
                             class="flex items-center gap-2 px-4 py-2.5 bg-[#0D47A1] text-white text-sm font-semibold rounded-xl hover:bg-[#1565C0] transition shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-white" viewBox="0 0 24 24">
                                 <path d="M18 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-5 13h-2v-2H9v-2h2V9h2v2h2v2h-2z"/>

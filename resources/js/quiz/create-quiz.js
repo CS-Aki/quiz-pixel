@@ -1,3 +1,6 @@
+import { $ } from "jquery";
+import Swal from 'sweetalert2';
+
 let questionCount = 1;
 let quizList = [];
 
@@ -51,7 +54,7 @@ function addQuestion() {
                         placeholder="30"
                         min="5"
                         max="300"
-                        class="w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center"
+                        class="time-limit w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center"
                     />
                     <span>sec</span>
                 </div>
@@ -60,9 +63,9 @@ function addQuestion() {
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-slate-400" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 14.93V18h-2v-1.07A4.002 4.002 0 0 1 8 13h2a2 2 0 1 0 2-2c-2.21 0-4-1.79-4-4a4.002 4.002 0 0 1 3-3.87V2h2v1.13A4.002 4.002 0 0 1 16 7h-2a2 2 0 1 0-2 2c2.21 0 4 1.79 4 4a4.002 4.002 0 0 1-3 3.93z"/></svg>
                     <input
                         type="number"
-                        placeholder="10"
+                        placeholder="1"
                         min="0"
-                        class="w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center"
+                        class="points w-14 text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-[#2979FF] text-center"
                     />
                     <span>pts</span>
                 </div>
@@ -177,6 +180,42 @@ function toggleSwitch(btn) {
     }
 }
 
+function saveCurrQuiz(){
+    let updatedQuizList = [];
+
+    $('.question-card').each(function (i) {
+        let question = $(this).find('.question-text').val();
+        let timeLimit = $(this).find('.time-limit').val() || 30;
+        let points = $(this).find('.points').val() || 1;
+
+        console.log(timeLimit);
+        console.log(points);
+
+        let choices = {};
+        $(this).find('.choice-item').each(function () {
+            choices[$(this).data('choice')] = $(this).val();
+        });
+
+        let answerKey = $(this)
+            .find('.correct-btn.bg-green-500')
+            .siblings('.choice-item')
+            .data('choice');
+
+        updatedQuizList.push({
+            questionNum: i + 1,
+            question: question,
+            choices: choices,
+            answerKey: answerKey,
+            timeLimit: timeLimit,
+            points: points,
+        });
+    });
+
+    quizList = updatedQuizList;
+    // console.table(quizList);
+    return quizList;
+}
+
 $(document).ready(function () {
     $(document).on('click', '.correct-btn', function () {
         setCorrect(this);
@@ -203,32 +242,39 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '#saveDraftBtn', function () {
-        let updatedQuizList = [];
+        let status = "draft";
+        let currQuizList = saveCurrQuiz();
+        let quizTitle = $('#quizTitle').val();
+        let quizDescription = $('#quizDescription').val();
+        let userLimit = $('#participantLimit').val();
 
-        $('.question-card').each(function (i) {
-            let question = $(this).find('.question-text').val();
+        // console.log(quizTitle);
+        // console.log(quizDescription);
+        // console.log(userLimit);
+        console.table(currQuizList);
 
-            let choices = {};
-            $(this).find('.choice-item').each(function () {
-                choices[$(this).data('choice')] = $(this).val();
-            });
-
-            let answerKey = $(this)
-                .find('.correct-btn.bg-green-500')
-                .siblings('.choice-item')
-                .data('choice');
-
-            updatedQuizList.push({
-                questionNum: i + 1,
-                question: question,
-                choices: choices,
-                answerKey: answerKey
-            });
+        $.ajax({
+            url: '/save-quiz',
+            type: 'POST',
+            data: {
+                status: status,
+                quizTitle: quizTitle,
+                quizDescription: quizDescription,
+                quizList: currQuizList,
+                userLimit: userLimit,
+            },
+            success: function (response) {
+                console.table(response);
+            },
+            error: function (xhr) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: xhr.responseJSON?.message || 'Something went wrong',
+                    icon: 'error'
+                });     
+            }
         });
 
-        quizList = updatedQuizList;
-
-        console.table(quizList);
     });
 
 
