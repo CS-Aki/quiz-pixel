@@ -137,7 +137,7 @@
                                     </div>
                                 </div>
                                 <div class="flex gap-2 px-5 pb-4">
-                                    <a href="{{ route('to-lobby', ['id' => $quiz->id]) }}" class="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#2979FF] text-white text-xs font-semibold rounded-xl hover:bg-[#1565C0] transition">
+                                    <a href="{{ route('to-lobby', ['code' => $quiz->code]) }}" class="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#2979FF] text-white text-xs font-semibold rounded-xl hover:bg-[#1565C0] transition">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                         Host
                                     </a>

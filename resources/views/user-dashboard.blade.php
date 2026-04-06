@@ -26,8 +26,8 @@
                         <p class="text-blue-100 text-sm mt-1">What would you like to do today?</p>
                     </div>
                     <div class="flex flex-wrap gap-3">
-                        <a href="{{ route('to-lobby') }}"
-                            class="flex items-center gap-2 px-4 py-2.5 bg-white text-[#2979FF] text-sm font-semibold rounded-xl hover:bg-blue-50 transition shadow-sm">
+                        <a onclick="document.getElementById('joinRoomModal').classList.remove('hidden')"
+                            class="flex items-center gap-2 px-4 py-2.5 bg-white text-[#2979FF] text-sm font-semibold rounded-xl hover:bg-blue-50 transition shadow-sm cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-[#2979FF]" viewBox="0 0 24 24">
                                 <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm1-11H11v3H8v2h3v3h2v-3h3v-2h-3z"/>
                             </svg>
@@ -228,6 +228,131 @@
         </div>
     </div>
 @endif
+
+<!-- Join Room Modal -->
+<div id="joinRoomModal" class="hidden fixed inset-0 z-[200] flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onclick="closeJoinModal()"></div>
+
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-8 z-10">
+
+        <!-- Close -->
+        <button onclick="closeJoinModal()"
+            class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+
+        <!-- Icon + Title -->
+        <div class="mb-6">
+            <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-[#2979FF]" viewBox="0 0 24 24">
+                    <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm1-11H11v3H8v2h3v3h2v-3h3v-2h-3z"/>
+                </svg>
+            </div>
+            <h2 class="text-xl font-bold text-slate-800">Join a Quiz Room</h2>
+            <p class="text-sm text-slate-400 mt-1">Enter the room code given by your host.</p>
+        </div>
+
+        <!-- Code Inputs -->
+        <div class="mb-2">
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Room Code</label>
+            <div class="flex gap-2 justify-center" id="codeInputs">
+                <input type="text" maxlength="1" inputmode="text"
+                    class="code-input w-11 h-12 text-center text-xl font-bold text-slate-800 border-2 border-gray-200 rounded-xl outline-none focus:border-[#2979FF] focus:ring-2 focus:ring-blue-100 uppercase transition"
+                    oninput="onCodeInput(this)" onkeydown="onCodeKey(event, this)" onpaste="handlePaste(event, this)" />
+                <input type="text" maxlength="1" inputmode="text"
+                    class="code-input w-11 h-12 text-center text-xl font-bold text-slate-800 border-2 border-gray-200 rounded-xl outline-none focus:border-[#2979FF] focus:ring-2 focus:ring-blue-100 uppercase transition"
+                    oninput="onCodeInput(this)" onkeydown="onCodeKey(event, this)" onpaste="handlePaste(event, this)" />
+                <input type="text" maxlength="1" inputmode="text"
+                    class="code-input w-11 h-12 text-center text-xl font-bold text-slate-800 border-2 border-gray-200 rounded-xl outline-none focus:border-[#2979FF] focus:ring-2 focus:ring-blue-100 uppercase transition"
+                    oninput="onCodeInput(this)" onkeydown="onCodeKey(event, this)" onpaste="handlePaste(event, this)" />
+                <input type="text" maxlength="1" inputmode="text"
+                    class="code-input w-11 h-12 text-center text-xl font-bold text-slate-800 border-2 border-gray-200 rounded-xl outline-none focus:border-[#2979FF] focus:ring-2 focus:ring-blue-100 uppercase transition"
+                    oninput="onCodeInput(this)" onkeydown="onCodeKey(event, this)" onpaste="handlePaste(event, this)" />
+                <input type="text" maxlength="1" inputmode="text"
+                    class="code-input w-11 h-12 text-center text-xl font-bold text-slate-800 border-2 border-gray-200 rounded-xl outline-none focus:border-[#2979FF] focus:ring-2 focus:ring-blue-100 uppercase transition"
+                    oninput="onCodeInput(this)" onkeydown="onCodeKey(event, this)" onpaste="handlePaste(event, this)" />
+                <input type="text" maxlength="1" inputmode="text"
+                    class="code-input w-11 h-12 text-center text-xl font-bold text-slate-800 border-2 border-gray-200 rounded-xl outline-none focus:border-[#2979FF] focus:ring-2 focus:ring-blue-100 uppercase transition"
+                    oninput="onCodeInput(this)" onkeydown="onCodeKey(event, this)" onpaste="handlePaste(event, this)" />
+            </div>
+            <p id="joinRoomError" class="text-red-500 text-xs mt-3 text-center hidden">Invalid room code. Please try again.</p>
+        </div>
+
+        <!-- Join Button -->
+        <button type="button" onclick="joinRoom()"
+            class="w-full py-3 mt-5 bg-[#2979FF] hover:bg-[#1565C0] text-white text-sm font-bold rounded-xl transition">
+            Join Room
+        </button>
+
+        <p class="text-center text-xs text-slate-400 mt-3">Ask the host for the 4-character room code.</p>
+    </div>
+</div>
+
+<script>
+    function closeJoinModal() {
+        document.getElementById('joinRoomModal').classList.add('hidden');
+        document.querySelectorAll('.code-input').forEach(i => {
+            i.value = '';
+            i.classList.remove('border-red-400');
+        });
+        document.getElementById('joinRoomError').classList.add('hidden');
+    }
+
+    function onCodeInput(input) {
+        input.value = input.value.toUpperCase();
+        const inputs = document.querySelectorAll('.code-input');
+        const idx = [...inputs].indexOf(input);
+        if (input.value && idx < inputs.length - 1) {
+            inputs[idx + 1].focus();
+        }
+    }
+
+    function handlePaste(e, input) {
+        e.preventDefault();
+        const pasted = e.clipboardData.getData('text').trim().toUpperCase().replace(/\s/g, '');
+        const inputs = document.querySelectorAll('.code-input');
+        const startIdx = [...inputs].indexOf(input);
+
+        pasted.split('').forEach((char, i) => {
+            const target = inputs[startIdx + i];
+            if (target) target.value = char;
+        });
+
+        // Focus the next empty input after paste, or the last one
+        const nextEmpty = [...inputs].find((inp, i) => i >= startIdx && !inp.value);
+        (nextEmpty || inputs[inputs.length - 1]).focus();
+    }
+
+    function onCodeKey(e, input) {
+        const inputs = document.querySelectorAll('.code-input');
+        const idx = [...inputs].indexOf(input);
+        if (e.key === 'Backspace' && !input.value && idx > 0) {
+            inputs[idx - 1].focus();
+        }
+    }
+
+    function joinRoom() {
+        const inputs = document.querySelectorAll('.code-input');
+        const code = [...inputs].map(i => i.value.trim()).join('');
+
+        if (code.length < 4) {
+            inputs.forEach(i => i.classList.add('border-red-400'));
+            document.getElementById('joinRoomError').classList.remove('hidden');
+            document.getElementById('joinRoomError').textContent = 'Please enter the full 4-character code.';
+            return;
+        }
+
+        // Reset error state
+        inputs.forEach(i => i.classList.remove('border-red-400'));
+        document.getElementById('joinRoomError').classList.add('hidden');
+
+        // Redirect to the room — swap with your actual route
+        window.location.href = `/lobby/${code}`;
+    }
+</script>
 
 @vite('resources/js/user/logout.js')
 

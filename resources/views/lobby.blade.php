@@ -18,14 +18,14 @@
                                 Waiting for host
                             </span>
                         </div>
-                        <h1 class="text-white text-xl font-bold">{{ $quiz->title }}</h1>
+                        <h1 class="text-white text-xl font-bold">{{ $quiz[0]->title }}</h1>
                         <p class="text-blue-100 text-sm mt-0.5">Hosted by <span class="font-semibold text-white">Kang</span></p>
                     </div>
 
                     <!-- Room Code -->
                     <div class="bg-white/15 backdrop-blur rounded-xl px-5 py-3 text-center min-w-[160px]">
                         <p class="text-blue-100 text-xs font-medium mb-1">Room Code</p>
-                        <p class="text-white text-3xl font-bold tracking-[0.2em]" id="roomCode">{{ $quiz->code }}</p>
+                        <p class="text-white text-3xl font-bold tracking-[0.2em]" id="roomCode">{{ $quiz[0]->code }}</p>
                         <button onclick="copyCode()" class="text-blue-100 text-xs mt-1.5 hover:text-white transition flex items-center gap-1 mx-auto">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 fill-current" viewBox="0 0 24 24">
                                 <path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
@@ -41,7 +41,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-[#2979FF]" viewBox="0 0 24 24">
                             <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 14.93V18h-2v-1.07A4.002 4.002 0 0 1 8 13h2a2 2 0 1 0 2-2c-2.21 0-4-1.79-4-4a4.002 4.002 0 0 1 3-3.87V2h2v1.13A4.002 4.002 0 0 1 16 7h-2a2 2 0 1 0-2 2c2.21 0 4 1.79 4 4a4.002 4.002 0 0 1-3 3.93z"/>
                         </svg>
-                        <span><span class="font-semibold text-slate-800">{{ count($quiz->questions) }}</span> questions</span>
+                        <span><span class="font-semibold text-slate-800">{{ count($quiz[0]->questions) }}</span> questions</span>
                     </div>
                     <div class="flex items-center gap-2 text-sm text-slate-600">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-[#2979FF]" viewBox="0 0 510 510">

@@ -10,10 +10,9 @@ class LobbyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(string $id)
+    public function index(string $code)
     {
-        $quiz = Quiz::find($id);
-
+        $quiz = Quiz::where('code', $code)->get();
         return view('lobby', compact('quiz'));
     }
 
