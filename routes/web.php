@@ -34,3 +34,4 @@ Route::get('/to-quiz-list', [QuizController::class, 'quizList'])->name('to-quiz-
 Route::get('/to-edit-quiz/{id}', [QuizController::class, 'edit'])->name('to-edit-quiz');
 Route::delete('/delete-question/{id}', [QuizController::class, 'deleteQuestion'])->name("delete-question");
 Route::post('/publish-quiz', [QuizController::class, 'publishQuiz'])->name('publish-quiz');
+Route::delete('/delete-quiz/{id}', [QuizController::class, 'deleteQuiz'])->name('delete-quiz');

@@ -39,7 +39,7 @@
                             class="filter-tab px-4 py-1.5 text-sm font-semibold rounded-lg bg-[#2979FF] text-white transition">
                             All
                         </button>
-                        <button onclick="setFilter('published', this)"
+                        <button onclick="setFilter('active', this)"
                             class="filter-tab px-4 py-1.5 text-sm font-semibold rounded-lg text-slate-500 hover:bg-gray-100 transition">
                             Published
                         </button>
@@ -95,9 +95,17 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75l11-11.03-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                                         Edit
                                     </a>
-                                    <a class="flex items-center justify-center px-3 py-2 border border-gray-200 text-slate-400 text-xs rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/></svg>
-                                    </a>
+                                    <input type="hidden" class="quiz-code" value="{{ $quiz->code }}">
+                                    <form action="{{ route('delete-quiz', ['id' => $quiz->id]) }}"
+                                        method="POST"
+                                        class="delete-quiz-form inline">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button class="delete-quiz-btn flex items-center justify-center px-3 py-2 border border-gray-200 text-slate-400 text-xs rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/></svg>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         @endif
@@ -124,7 +132,7 @@
                                         </div>
                                         <div class="flex-1 text-center">
                                             <p class="text-base font-bold text-slate-800">--</p>
-                                            <p class="text-xs text-slate-400 mt-0.5">Completion</p>
+                                            <p class="text-xs text-slate-400 mt-0.5">Highest score</p>
                                         </div>
                                     </div>
                                 </div>
@@ -137,13 +145,22 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75l11-11.03-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                                         Edit
                                     </a>
-                                    <a class="flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-200 text-slate-500 text-xs font-medium rounded-xl hover:bg-gray-50 transition">
+                                    <a class="getQuizCode flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-200 text-slate-500 text-xs font-medium rounded-xl hover:bg-gray-50 transition">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 0-6 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0 0 6c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
-                                        Share
+                                        Code
                                     </a>
-                                    <a class="flex items-center justify-center px-3 py-2 border border-gray-200 text-slate-400 text-xs rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/></svg>
-                                    </a>
+                                    <input type="hidden" class="quiz-code" value="{{ $quiz->code }}">
+                                    <form action="{{ route('delete-quiz', ['id' => $quiz->id]) }}"
+                                        method="POST"
+                                        class="delete-quiz-form inline">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button class="delete-quiz-btn flex items-center justify-center px-3 py-2 border border-gray-200 text-slate-400 text-xs rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/></svg>
+                                        </button>
+                                    </form>
+
                                 </div>
                             </div>
                         @endif
@@ -300,6 +317,8 @@
         </section>
     </div>
 </div>
+
+@vite('resources/js/quiz/quiz-list.js');
 
 <script>
     let currentFilter = 'all';

@@ -198,7 +198,67 @@ function saveCurrQuiz() {
     return quizList;
 }
 
+function validateQuiz() {
+    let isValid = true;
+    let errorMessages = [];
+
+    $('.question-card').each(function (i) {
+        let qNum = i + 1;
+
+        let question = $(this).find('.question-text').val()?.trim();
+        let missingFields = [];
+
+        // Check question
+        if (!question) {
+            missingFields.push('question');
+        }
+
+        // Check choices (only push once even if many are empty)
+        let hasEmptyChoice = false;
+        $(this).find('.choice-item').each(function () {
+            if (!$(this).val()?.trim()) {
+                hasEmptyChoice = true;
+                return false; // break loop early
+            }
+        });
+
+        if (hasEmptyChoice) {
+            missingFields.push('choices');
+        }
+
+        // Check correct answer
+        let answerKey = $(this)
+            .find('.correct-btn.bg-green-500')
+            .siblings('.choice-item')
+            .data('choice');
+
+        if (!answerKey) {
+            missingFields.push('correct answer');
+        }
+
+        // If this question has issues → ONE message only
+        if (missingFields.length > 0) {
+            isValid = false;
+            errorMessages.push(
+                `Question ${qNum}: Missing ${missingFields.join(', ')}`
+            );
+        }
+    });
+
+    if (!isValid) {
+        Swal.fire({
+            title: 'Empty Fields',
+            html: errorMessages.join('<br>'),
+            icon: 'error'
+        });
+    }
+
+    return isValid;
+}
+
+
 function saveQuiz(status) {
+     if (!validateQuiz()) return;
     const currQuizList = saveCurrQuiz();
     const quizTitle = $('#quizTitle').val();
     const quizDescription = $('#quizDescription').val();

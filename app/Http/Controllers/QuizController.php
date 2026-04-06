@@ -132,6 +132,16 @@ class QuizController extends Controller
         ]);
     }
 
+    public function deleteQuiz(string $id){
+        $quiz = Quiz::find($id);
+        $quiz->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Quiz deleted successfully.',
+        ]);
+    }
+
     public function publishQuiz(Request $request){
         $quiz = Quiz::find($request->quizId);
         $quiz->status = "published";
