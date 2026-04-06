@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\LobbyController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
 
@@ -35,3 +36,4 @@ Route::get('/to-edit-quiz/{id}', [QuizController::class, 'edit'])->name('to-edit
 Route::delete('/delete-question/{id}', [QuizController::class, 'deleteQuestion'])->name("delete-question");
 Route::post('/publish-quiz', [QuizController::class, 'publishQuiz'])->name('publish-quiz');
 Route::delete('/delete-quiz/{id}', [QuizController::class, 'deleteQuiz'])->name('delete-quiz');
+Route::get('/lobby/{id}', [LobbyController::class, 'index'])->name('to-lobby');

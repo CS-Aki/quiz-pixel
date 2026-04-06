@@ -26,13 +26,13 @@
                         <p class="text-blue-100 text-sm mt-1">What would you like to do today?</p>
                     </div>
                     <div class="flex flex-wrap gap-3">
-                        <button type="button"
+                        <a href="{{ route('to-lobby') }}"
                             class="flex items-center gap-2 px-4 py-2.5 bg-white text-[#2979FF] text-sm font-semibold rounded-xl hover:bg-blue-50 transition shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-[#2979FF]" viewBox="0 0 24 24">
                                 <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm1-11H11v3H8v2h3v3h2v-3h3v-2h-3z"/>
                             </svg>
                             Join a Quiz Room
-                        </button>
+                        </a>
                         <a href="{{ route("to-create-quiz") }}"
                             class="flex items-center gap-2 px-4 py-2.5 bg-[#0D47A1] text-white text-sm font-semibold rounded-xl hover:bg-[#1565C0] transition shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-white" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@
                     </div>
                     <div class="bg-white rounded-xl p-5 shadow-sm">
                         <p class="text-xs text-slate-400 font-medium uppercase tracking-wide">Quizzes Created</p>
-                        <p class="text-3xl font-bold text-slate-800 mt-1">8</p>
+                        <p class="text-3xl font-bold text-slate-800 mt-1">{{ count($quizzes) }}</p>
                         <p class="text-xs text-blue-500 mt-1">+1 this week</p>
                     </div>
                     <div class="bg-white rounded-xl p-5 shadow-sm">
