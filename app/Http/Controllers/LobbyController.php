@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Quiz;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LobbyController extends Controller
 {
@@ -13,7 +14,17 @@ class LobbyController extends Controller
     public function index(string $code)
     {
         $quiz = Quiz::where('code', $code)->get();
-        return view('lobby', compact('quiz'));
+        $user = Auth::user();
+        $quizzes = $user->quizzes;
+        $userStatus = "";
+
+        if ($quiz && $user->quizzes->contains('id', $quiz[0]->id)) {
+            $userStatus = "owner";
+        } else {
+            $userStatus = "participant";
+        }
+        
+        return view('lobby', compact('quiz', 'userStatus'));
     }
 
     /**

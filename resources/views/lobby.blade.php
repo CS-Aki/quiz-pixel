@@ -44,25 +44,25 @@
                         <span><span class="font-semibold text-slate-800">{{ count($quiz[0]->questions) }}</span> questions</span>
                     </div>
                     <div class="flex items-center gap-2 text-sm text-slate-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-[#2979FF]" viewBox="0 0 510 510">
+                        {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-[#2979FF]" viewBox="0 0 510 510">
                             <g fill-opacity=".9">
                                 <path d="M255 0C114.75 0 0 114.75 0 255s114.75 255 255 255 255-114.75 255-255S395.25 0 255 0zm0 459c-112.2 0-204-91.8-204-204S142.8 51 255 51s204 91.8 204 204-91.8 204-204 204z"/>
                                 <path d="M267.75 127.5H229.5v153l132.6 81.6 20.4-33.15-114.75-68.85z"/>
                             </g>
-                        </svg>
-                        <span><span class="font-semibold text-slate-800">30</span> sec per question</span>
+                        </svg> --}}
+                        {{-- <span><span class="font-semibold text-slate-800">30</span> sec per question</span> --}}
                     </div>
                     <div class="flex items-center gap-2 text-sm text-slate-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-[#2979FF]" viewBox="0 0 24 24">
+                        {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-[#2979FF]" viewBox="0 0 24 24">
                             <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm-1-6h2v2h-2zm0-8h2v6h-2z"/>
-                        </svg>
-                        <span><span class="font-semibold text-slate-800">10</span> pts per question</span>
+                        </svg> --}}
+                        {{-- <span><span class="font-semibold text-slate-800">10</span> pts per question</span> --}}
                     </div>
                     <div class="flex items-center gap-2 text-sm text-slate-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-[#2979FF]" viewBox="0 0 214.27 214.27">
+                        {{-- <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-[#2979FF]" viewBox="0 0 214.27 214.27">
                             <path d="M196.926 55.171c-.11-5.785-.215-11.25-.215-16.537a7.5 7.5 0 0 0-7.5-7.5c-32.075 0-56.496-9.218-76.852-29.01a7.498 7.498 0 0 0-10.457 0c-20.354 19.792-44.771 29.01-76.844 29.01a7.5 7.5 0 0 0-7.5 7.5c0 5.288-.104 10.755-.215 16.541-1.028 53.836-2.436 127.567 87.331 158.682a7.495 7.495 0 0 0 4.912 0c89.774-31.116 88.368-104.849 87.34-158.686zm-89.795 143.641c-76.987-27.967-75.823-89.232-74.79-143.351.062-3.248.122-6.396.164-9.482 30.04-1.268 54.062-10.371 74.626-28.285 20.566 17.914 44.592 27.018 74.634 28.285.042 3.085.102 6.231.164 9.477 1.032 54.121 2.195 115.388-74.798 143.356z"/>
-                        </svg>
-                        <span>Geography</span>
+                        </svg> --}}
+                        {{-- <span>Geography</span> --}}
                     </div>
                     <div class="ml-auto flex items-center gap-2 text-sm">
                         <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
@@ -73,7 +73,6 @@
 
                 <!-- Players + Waiting -->
                 <div class="grid lg:grid-cols-3 gap-6">
-
                     <!-- Players Grid -->
                     <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
@@ -154,25 +153,29 @@
                         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                             <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Host Controls</p>
                             <div class="space-y-2.5">
-                                <button onclick="startQuiz()"
-                                    class="w-full flex items-center justify-center gap-2 py-3 bg-[#2979FF] text-white text-sm font-bold rounded-xl hover:bg-[#1565C0] transition shadow-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-white" viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z"/>
-                                    </svg>
-                                    Start Quiz Now
-                                </button>
+                                @if ($userStatus === 'owner')
+                                    <button onclick="startQuiz()"
+                                        class="w-full flex items-center justify-center gap-2 py-3 bg-[#2979FF] text-white text-sm font-bold rounded-xl hover:bg-[#1565C0] transition shadow-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-white" viewBox="0 0 24 24">
+                                            <path d="M8 5v14l11-7z"/>
+                                        </svg>
+                                        Start Quiz Now
+                                    </button>
+                                @endif
                                 <button class="w-full flex items-center justify-center gap-2 py-2.5 border border-gray-200 text-slate-500 text-sm font-medium rounded-xl hover:bg-gray-50 transition">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                                         <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 0-6 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0 0 6c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
                                     </svg>
                                     Share Room Link
                                 </button>
-                                <button class="w-full flex items-center justify-center gap-2 py-2.5 border border-red-100 text-red-400 text-sm font-medium rounded-xl hover:bg-red-50 transition">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                                        <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                                    </svg>
-                                    Close Room
-                                </button>
+                                @if ($userStatus === 'owner')
+                                    <button class="w-full flex items-center justify-center gap-2 py-2.5 border border-red-100 text-red-400 text-sm font-medium rounded-xl hover:bg-red-50 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                            <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                        </svg>
+                                        Close Room
+                                    </button>
+                                @endif
                             </div>
                         </div>
 
