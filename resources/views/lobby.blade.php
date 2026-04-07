@@ -19,7 +19,13 @@
                             </span>
                         </div>
                         <h1 class="text-white text-xl font-bold">{{ $quiz[0]->title }}</h1>
-                        <p class="text-blue-100 text-sm mt-0.5">Hosted by <span class="font-semibold text-white">Kang</span></p>
+                        @if ($userStatus === 'owner')
+                            <p class="text-blue-100 text-sm mt-0.5">Hosted by <span class="font-semibold text-white">{{ $user->first_name }}</span></p>
+                        @endif
+
+                        @if ($userStatus === 'participant')
+                            <p class="text-blue-100 text-sm mt-0.5">Hosted by <span class="font-semibold text-white">{{ $userOwner }}</span></p>
+                        @endif
                     </div>
 
                     <!-- Room Code -->
@@ -77,16 +83,24 @@
                     <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                             <h2 class="text-sm font-bold text-slate-800">Players in Room</h2>
-                            <span class="text-xs text-slate-400" id="playerCountLabel">4 / unlimited</span>
+                            <span class="text-xs text-slate-400" id="playerCountLabel">0 / <span id="playerLimit">{{ $quiz[0]->user_limit }}</span> </span>
                         </div>
                         <div id="playerGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-5">
+                            @if ($userStatus === 'owner')
+                                <div class="player-card flex flex-col items-center gap-2 bg-[#EFF6FF] border border-blue-100 rounded-xl py-4 px-3">
+                                    <div class="w-12 h-12 rounded-full bg-[#2979FF] flex items-center justify-center text-white font-bold text-sm">KG</div>
+                                    <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">{{ $user->username }}</p>
+                                    <span class="text-[10px] font-bold text-[#2979FF] bg-blue-100 px-2 py-0.5 rounded-full">Host</span>
+                                </div>
+                            @endif
 
-                            <!-- Player Card -->
-                            <div class="player-card flex flex-col items-center gap-2 bg-[#EFF6FF] border border-blue-100 rounded-xl py-4 px-3">
-                                <div class="w-12 h-12 rounded-full bg-[#2979FF] flex items-center justify-center text-white font-bold text-sm">KG</div>
-                                <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">Kang</p>
-                                <span class="text-[10px] font-bold text-[#2979FF] bg-blue-100 px-2 py-0.5 rounded-full">Host</span>
-                            </div>
+                            @if ($userStatus === 'participant')
+                                <div class="player-card flex flex-col items-center gap-2 bg-[#EFF6FF] border border-blue-100 rounded-xl py-4 px-3">
+                                    <div class="w-12 h-12 rounded-full bg-[#2979FF] flex items-center justify-center text-white font-bold text-sm">KG</div>
+                                    <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">{{ $user->username }}</p>
+                                    <span class="text-[10px] font-bold text-[#2979FF] bg-blue-100 px-2 py-0.5 rounded-full">Ready</span>
+                                </div>
+                            @endif
 
                             <div class="player-card flex flex-col items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl py-4 px-3">
                                 <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">MR</div>
@@ -94,36 +108,20 @@
                                 <span class="text-[10px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Ready</span>
                             </div>
 
-                            <div class="player-card flex flex-col items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl py-4 px-3">
-                                <div class="w-12 h-12 rounded-full bg-orange-400 flex items-center justify-center text-white font-bold text-sm">JD</div>
-                                <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">JohnDoe</p>
-                                <span class="text-[10px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Ready</span>
-                            </div>
-
-                            <div class="player-card flex flex-col items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl py-4 px-3">
+                            {{-- <div class="player-card flex flex-col items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl py-4 px-3">
                                 <div class="w-12 h-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-sm">AL</div>
                                 <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">Alex</p>
                                 <span class="text-[10px] font-medium text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full">Joined</span>
-                            </div>
+                            </div> --}}
 
-                            <!-- Empty Slot -->
-                            <div class="flex flex-col items-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-4 px-3">
+                            {{-- <div class="flex flex-col items-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-4 px-3">
                                 <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-gray-300" viewBox="0 0 24 24">
                                         <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/>
                                     </svg>
                                 </div>
                                 <p class="text-xs text-gray-300 font-medium">Waiting...</p>
-                            </div>
-
-                            <div class="flex flex-col items-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-4 px-3">
-                                <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-gray-300" viewBox="0 0 24 24">
-                                        <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/>
-                                    </svg>
-                                </div>
-                                <p class="text-xs text-gray-300 font-medium">Waiting...</p>
-                            </div>
+                            </div> --}}
 
                         </div>
                     </div>
@@ -141,12 +139,12 @@
                                     <p class="text-xs text-[#2979FF] font-semibold">Host</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2 bg-green-50 border border-green-100 rounded-xl px-3 py-2.5">
+                            {{-- <div class="flex items-center gap-2 bg-green-50 border border-green-100 rounded-xl px-3 py-2.5">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-green-500" viewBox="0 0 24 24">
                                     <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                                 </svg>
                                 <span class="text-xs font-semibold text-green-700">You're in the room</span>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <!-- Host Controls -->
@@ -246,5 +244,7 @@
         }, 1000);
     }
 </script>
+
+@vite('resources/js/quiz/lobby.js')
 
 </x-layout>

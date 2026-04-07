@@ -23,7 +23,13 @@ class Quiz extends Model
         return $this->hasMany(Question::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     protected $casts = [
         'user_limit' => 'integer',
     ];
+
 }

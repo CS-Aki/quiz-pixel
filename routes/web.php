@@ -37,3 +37,4 @@ Route::delete('/delete-question/{id}', [QuizController::class, 'deleteQuestion']
 Route::post('/publish-quiz', [QuizController::class, 'publishQuiz'])->name('publish-quiz');
 Route::delete('/delete-quiz/{id}', [QuizController::class, 'deleteQuiz'])->name('delete-quiz');
 Route::get('/lobby/{code}', [LobbyController::class, 'index'])->name('to-lobby');
+Route::post('/lobby/{code}/join', [LobbyController::class, 'join']);

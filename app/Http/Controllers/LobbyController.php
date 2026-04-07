@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\JoinLobby;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class LobbyController extends Controller
 {
@@ -14,19 +16,33 @@ class LobbyController extends Controller
     public function index(string $code)
     {
         $quiz = Quiz::where('code', $code)->get();
+        // Second one is better but im too lazy xD
+        // $quiz = Quiz::where('code', $code)->firstOrFail();
+
         $user = Auth::user();
+        $userOwner = "";
         $quizzes = $user->quizzes;
         $userStatus = "";
 
         if ($quiz && $user->quizzes->contains('id', $quiz[0]->id)) {
             $userStatus = "owner";
+            $userOwner = $user->first_name;
         } else {
             $userStatus = "participant";
+            $userOwner = $quiz[0]->user;
         }
-        
-        return view('lobby', compact('quiz', 'userStatus'));
+
+        return view('lobby', compact('quiz', 'userStatus', 'user', 'userOwner'));
     }
 
+    public function join(string $code){
+        $quiz = Quiz::where('code', $code)->firstOrFail();
+        $user = Auth::user();
+
+        JoinLobby::broadcast($user->id, $quiz->code);
+
+        return response()->json(['status' => 'ok']);
+    }
     /**
      * Show the form for creating a new resource.
      */
