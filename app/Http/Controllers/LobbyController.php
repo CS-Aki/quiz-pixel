@@ -39,7 +39,7 @@ class LobbyController extends Controller
         $quiz = Quiz::where('code', $code)->firstOrFail();
         $user = Auth::user();
 
-        JoinLobby::broadcast($user->id, $quiz->code);
+        JoinLobby::broadcast($user->id, $quiz->code, $user->username);
 
         return response()->json(['status' => 'ok']);
     }

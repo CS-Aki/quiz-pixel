@@ -16,20 +16,22 @@ class JoinLobby implements ShouldBroadcastNow
     use Dispatchable, SerializesModels;
     public int $userId;
     public string $quizCode;
+    public string $username;
     /**
      * Create a new event instance.
      */
-    public function __construct(int $userId, string $quizCode)
+    public function __construct(int $userId, string $quizCode, string $username)
     {
         $this->userId = $userId;
         $this->quizCode = $quizCode;
+        $this->username = $username;
     }
 
     public function broadcastToEveryone(): bool
     {
         return true;
     }
-    
+
     /**
      * Get the channels the event should broadcast on.
      *
@@ -43,6 +45,6 @@ class JoinLobby implements ShouldBroadcastNow
     }
 
     public function broadcastWith(): array {
-        return ['userId' => $this->userId];
+        return ['userId' => $this->userId, 'username' => $this->username];
     }
 }

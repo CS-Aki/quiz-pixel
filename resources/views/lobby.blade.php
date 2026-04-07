@@ -72,7 +72,7 @@
                     </div>
                     <div class="ml-auto flex items-center gap-2 text-sm">
                         <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                        <span class="font-semibold text-slate-800" id="playerCount">4</span>
+                        <span class="font-semibold text-slate-800" id="playerCount">0</span>
                         <span class="text-slate-500">players joined</span>
                     </div>
                 </div>
@@ -89,6 +89,7 @@
                             @if ($userStatus === 'owner')
                                 <div class="player-card flex flex-col items-center gap-2 bg-[#EFF6FF] border border-blue-100 rounded-xl py-4 px-3">
                                     <div class="w-12 h-12 rounded-full bg-[#2979FF] flex items-center justify-center text-white font-bold text-sm">KG</div>
+                                    <input type="hidden" id="userId" value="{{ $user->id }}">
                                     <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">{{ $user->username }}</p>
                                     <span class="text-[10px] font-bold text-[#2979FF] bg-blue-100 px-2 py-0.5 rounded-full">Host</span>
                                 </div>
@@ -98,15 +99,16 @@
                                 <div class="player-card flex flex-col items-center gap-2 bg-[#EFF6FF] border border-blue-100 rounded-xl py-4 px-3">
                                     <div class="w-12 h-12 rounded-full bg-[#2979FF] flex items-center justify-center text-white font-bold text-sm">KG</div>
                                     <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">{{ $user->username }}</p>
+                                    <input type="hidden" id="userId" value="{{ $user->id }}">
                                     <span class="text-[10px] font-bold text-[#2979FF] bg-blue-100 px-2 py-0.5 rounded-full">Ready</span>
                                 </div>
                             @endif
 
-                            <div class="player-card flex flex-col items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl py-4 px-3">
+                            {{-- <div class="player-card flex flex-col items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl py-4 px-3">
                                 <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">MR</div>
                                 <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">Maria</p>
                                 <span class="text-[10px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Ready</span>
-                            </div>
+                            </div> --}}
 
                             {{-- <div class="player-card flex flex-col items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl py-4 px-3">
                                 <div class="w-12 h-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-sm">AL</div>

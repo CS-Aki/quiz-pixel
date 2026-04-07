@@ -1,7 +1,26 @@
 import $  from "jquery";
 
-function displayPlayers(users){
+let userId = $("#userId").val();
 
+function displayPlayers(users){
+    const grid = $("#playerGrid");
+    $("#playerCount").text(users.length - 1);
+    users.forEach(user => {
+
+        if (user.id == userId){
+            return;
+        }
+
+        let card = $(`
+            <div class="player-card flex flex-col items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl py-4 px-3">
+                <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">MR</div>
+                <p class="text-xs font-semibold text-slate-700 text-center truncate w-full">${user.username}</p>
+                <span class="text-[10px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Ready</span>
+            </div>
+        `);
+
+        grid.append(card);
+    });
 }
 
 $(document).ready(function () {

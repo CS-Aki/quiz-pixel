@@ -11,5 +11,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('join-lobby.{code}', function ($user, $code) {
     return [
         'id' => $user->id,
+        'username' => $user->username,
+        'name' => $user->first_name,
     ];
 });
