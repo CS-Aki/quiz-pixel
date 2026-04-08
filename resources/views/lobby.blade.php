@@ -88,7 +88,7 @@
                         <div id="playerGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-5">
                             <input type="hidden" id="ownerId" value="{{ $ownerId }}">
                             @if ($userStatus === 'owner')
-                                <div class="player-card flex flex-col items-center gap-2 bg-[#EFF6FF] border border-blue-100 rounded-xl py-4 px-3">
+                                <div class="owner-card flex flex-col items-center gap-2 bg-[#EFF6FF] border border-blue-100 rounded-xl py-4 px-3">
                                     <div class="w-12 h-12 rounded-full bg-[#2979FF] flex items-center justify-center text-white font-bold text-sm">KG</div>
                                     <input type="hidden" id="userId" value="{{ $user->id }}">
                                     <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">{{ $user->username }}</p>
@@ -136,18 +136,24 @@
                         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                             <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Your Status</p>
                             <div class="flex items-center gap-3 mb-4">
-                                <div class="w-10 h-10 rounded-full bg-[#2979FF] flex items-center justify-center text-white font-bold text-sm shrink-0">KG</div>
+                                <div class="w-10 h-10 rounded-full bg-[#2979FF] flex items-center justify-center text-white font-bold text-sm shrink-0">{{ $iconLabel }}</div>
                                 <div>
-                                    <p class="text-sm font-bold text-slate-800">Kang</p>
-                                    <p class="text-xs text-[#2979FF] font-semibold">Host</p>
+                                    <p class="text-sm font-bold text-slate-800">{{ $user->first_name }}</p>
+                                    @if ($userStatus === 'owner')
+                                        <p class="text-xs text-[#2979FF] font-semibold">Host</p>
+                                    @endif
+
+                                    @if ($userStatus === 'participant')
+                                        <p class="text-xs text-[#2979FF] font-semibold">Participant</p>
+                                    @endif
                                 </div>
                             </div>
-                            {{-- <div class="flex items-center gap-2 bg-green-50 border border-green-100 rounded-xl px-3 py-2.5">
+                            <div class="flex items-center gap-2 bg-green-50 border border-green-100 rounded-xl px-3 py-2.5">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-green-500" viewBox="0 0 24 24">
                                     <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                                 </svg>
                                 <span class="text-xs font-semibold text-green-700">You're in the room</span>
-                            </div> --}}
+                            </div>
                         </div>
 
                         <!-- Host Controls -->
@@ -163,11 +169,11 @@
                                         Start Quiz Now
                                     </button>
                                 @endif
-                                <button class="w-full flex items-center justify-center gap-2 py-2.5 border border-gray-200 text-slate-500 text-sm font-medium rounded-xl hover:bg-gray-50 transition">
+                                <button onclick="copyUrlLink()" class="w-full flex items-center justify-center gap-2 py-2.5 border border-gray-200 text-slate-500 text-sm font-medium rounded-xl hover:bg-gray-50 transition">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                                         <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 0-6 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0 0 6c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
                                     </svg>
-                                    Share Room Link
+                                    <span id="shareUrlLabel">Share Room Link</span>
                                 </button>
                                 @if ($userStatus === 'owner')
                                     <button class="w-full flex items-center justify-center gap-2 py-2.5 border border-red-100 text-red-400 text-sm font-medium rounded-xl hover:bg-red-50 transition">
@@ -190,18 +196,17 @@
                             <p class="text-xs text-slate-500 font-medium">Waiting for host to start</p>
                             <p class="text-xs text-slate-400 mt-0.5">This page will update automatically</p>
                         </div>
-
                     </div>
                 </div>
 
                 <!-- Leave Button (for participants) -->
                 <div class="mt-4 flex justify-start">
-                    <button class="flex items-center gap-2 text-sm text-slate-400 hover:text-red-500 transition">
+                    <a href="{{ route("to-dashboard") }}" class="flex items-center gap-2 text-sm text-slate-400 hover:text-red-500 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                             <path d="M10.09 15.59 11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5a2 2 0 0 0-2 2v4h2V5h14v14H5v-4H3v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/>
                         </svg>
                         Leave Room
-                    </button>
+                    </a>
                 </div>
 
             </div>
@@ -217,6 +222,15 @@
 </div>
 
 <script>
+    function copyUrlLink() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            const label = document.getElementById('shareUrlLabel');
+            label.textContent = 'Copied!';
+            setTimeout(() => label.textContent = 'Share Room Link', 2000);
+        });
+    }
+
     function copyCode() {
         const code = document.getElementById('roomCode').textContent;
         navigator.clipboard.writeText(code).then(() => {

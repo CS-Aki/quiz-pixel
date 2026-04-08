@@ -8,49 +8,106 @@ let count = 0;
 
 function displayPlayers(users){
     $("#playerCount").text(users.length - 1);
-    count = users.length - 1;
-
+    
     users.forEach(user => {
-        console.log(user);
-        if (user.id == userId || user.id == ownerId){
+        console.log(user.name);
+        let first = user.name[0] || "";
+
+        let last = "";
+        for (let i = user.name.length - 1; i >= 0; i--) {
+            if (/[a-zA-Z]/.test(user.name[i])) {
+                last = user.name[i];
+                break;
+            }
+        }
+
+        let iconLabel = (first + last).toUpperCase();
+        console.log("Icon label " + iconLabel);
+        
+        if (user.id == userId){
+            return;
+        }
+        
+        if (user.id == ownerId){
+            let ownerCard = $(`                              
+                    <div class="owner-card flex flex-col items-center gap-2 bg-[#EFF6FF] border border-blue-100 rounded-xl py-4 px-3">
+                                <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">${iconLabel}</div>
+                                <input type="hidden" id="userId" value="${user.id}">
+                                <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">${user.username}</p>
+                                <span class="text-[10px] font-bold text-green-600  bg-blue-100 px-2 py-0.5 rounded-full">Host</span>
+                            </div>
+                        `);
+
+            grid.append(ownerCard);
             return;
         }
 
         let card = $(`
             <div class="player-card flex flex-col items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl py-4 px-3">
                 <input type="hidden" class="otherUserId" value="${user.id}">
-                <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">MR</div>
+                <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">${iconLabel}</div>
                 <p class="text-xs font-semibold text-slate-700 text-center truncate w-full">${user.username}</p>
                 <span class="text-[10px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Ready</span>
             </div>
         `);
 
         grid.append(card);
+        
     });
+
+    count = $(".player-card").length;
 }
 
 function addPlayerCard(user){
     const grid = $("#playerGrid");
-    $("#playerCount").text(count + 1);
+    let name = user.name || "";
 
-        console.log(user);
-        if (user.id == userId){
-            return;
+    let first = name[0] || "";
+
+    let last = "";
+    for (let i = name.length - 1; i >= 0; i--) {
+        if (/[a-zA-Z]/.test(name[i])) {
+            last = name[i];
+            break;
         }
+    }
 
-        let card = $(`
-            <div class="player-card flex flex-col items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl py-4 px-3">
-                <input type="hidden" class="otherUserId" value="${user.id}">
-                <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">MR</div>
-                <p class="text-xs font-semibold text-slate-700 text-center truncate w-full">${user.username}</p>
-                <span class="text-[10px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Ready</span>
-            </div>
-        `);
+    let iconLabel = (first + last).toUpperCase();
 
-        grid.append(card);
+    console.log(user);
+    if (user.id == userId){
+        return;
+    }
+
+    if (user.id == ownerId){
+        let ownerCard = $(`                              
+                <div class="owner-card flex flex-col items-center gap-2 bg-[#EFF6FF] border border-blue-100 rounded-xl py-4 px-3">
+                            <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">${iconLabel}</div>
+                            <input type="hidden" id="userId" value="${user.id}">
+                            <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">${user.username}</p>
+                            <span class="text-[10px] font-bold text-green-600  bg-blue-100 px-2 py-0.5 rounded-full">Host</span>
+                        </div>
+                    `);
+
+        grid.append(ownerCard);
+        return;
+    }
+
+    let card = $(`
+        <div class="player-card flex flex-col items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl py-4 px-3">
+            <input type="hidden" class="otherUserId" value="${user.id}">
+            <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">${iconLabel}</div>
+            <p class="text-xs font-semibold text-slate-700 text-center truncate w-full">${user.username}</p>
+            <span class="text-[10px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Ready</span>
+        </div>
+    `);
+
+    grid.append(card);
 }
 
 $(document).ready(function () {
+    count = $(".player-card").length;
+
     let quizCode = $('#roomCode').text().trim();
     let playerLimit = $('#playerLimit').text().trim();
 
@@ -59,19 +116,20 @@ $(document).ready(function () {
     .here((users) => {
         console.log('Users in lobby:', users);
         displayPlayers(users);
-        $('#playerCountLabel').text(users.length - 1 + " / " + playerLimit);
+        $('#playerCountLabel').text(count + " / " + playerLimit);
     })
 
     // 🔹 When someone joins
     .joining((user) => {
 
         let current = parseInt($('#playerCountLabel').text());
-        let count = current + 1;
-
+        
         if (user.id != ownerId){
             addPlayerCard(user);
         }
-        
+        let count = $(".player-card").length;
+        console.log("New joining length " + count);
+
         $('#playerCountLabel').text(count + " / " + playerLimit);
         $("#playerCount").text(count);
     })
@@ -81,11 +139,11 @@ $(document).ready(function () {
         console.log('User left:', user);
 
         let current = parseInt($('#playerCountLabel').text());
-        let count = current - 1;
         let card = $(`.otherUserId[value="${user.id}"]`);
         console.log(card);
         
         card.closest('.player-card').remove();
+        let count = $(".player-card").length;
 
         $('#playerCountLabel').text(count + " / " + playerLimit);
         $("#playerCount").text(count);

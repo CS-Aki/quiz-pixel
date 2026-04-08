@@ -24,6 +24,21 @@ class LobbyController extends Controller
         $quizzes = $user->quizzes;
         $userStatus = "";
         $ownerId=0;
+        $iconLabel = "";
+
+        $name = $user->first_name ?? "";
+
+        $first = $name[0] ?? "";
+
+        $last = "";
+        for ($i = strlen($name) - 1; $i >= 0; $i--) {
+            if (ctype_alpha($name[$i])) {
+                $last = $name[$i];
+                break;
+            }
+        }
+
+        $iconLabel = strtoupper($first . $last);
 
         if ($quiz && $user->quizzes->contains('id', $quiz[0]->id)) {
             $userStatus = "owner";
@@ -35,7 +50,7 @@ class LobbyController extends Controller
             $userOwner = $quiz[0]->user->first_name;
         }
 
-        return view('lobby', compact('quiz', 'userStatus', 'user', 'userOwner', 'ownerId'));
+        return view('lobby', compact('quiz', 'userStatus', 'user', 'userOwner', 'ownerId', 'iconLabel'));
     }
 
     public function join(string $code){
