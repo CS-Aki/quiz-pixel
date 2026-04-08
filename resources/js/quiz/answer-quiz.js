@@ -65,6 +65,10 @@ $(function () {
         localStorage.removeItem(quizStateKey);
     }
 
+    function clearDoneState() {
+        localStorage.removeItem(quizStateKey + '_done');
+    }
+
     renderLeaderboard(window.INITIAL_LEADERBOARD || []);
     setupPusherLeaderboard();
 
@@ -74,19 +78,35 @@ $(function () {
         return;
     }
 
-    const savedState = loadQuizState();
+    const doneKey = quizStateKey + '_done';
+    const doneRaw = localStorage.getItem(doneKey);
 
-    if (savedState && savedState.currentIndex < total) {
-        currentIndex = savedState.currentIndex ?? 0;
-        score = savedState.score ?? 0;
-        correctCount = savedState.correctCount ?? 0;
-        timeLeft = savedState.timeLeft ?? (questions[currentIndex]?.time || 30);
-        answered = savedState.answered ?? false;
-        window.quizAnswers = savedState.answers || {};
-
-        loadQuestion(currentIndex, true);
+    if (doneRaw) {
+        try {
+            const done = JSON.parse(doneRaw);
+            score = done.score ?? 0;
+            correctCount = done.correctCount ?? 0;
+            $questionCard.remove();
+            showSummary();
+        } catch (e) {
+            localStorage.removeItem(doneKey);
+            loadQuestion(0, false);
+        }
     } else {
-        loadQuestion(0, false);
+        const savedState = loadQuizState();
+
+        if (savedState && savedState.currentIndex < total) {
+            currentIndex = savedState.currentIndex ?? 0;
+            score = savedState.score ?? 0;
+            correctCount = savedState.correctCount ?? 0;
+            timeLeft = savedState.timeLeft ?? (questions[currentIndex]?.time || 30);
+            answered = savedState.answered ?? false;
+            window.quizAnswers = savedState.answers || {};
+
+            loadQuestion(currentIndex, true);
+        } else {
+            loadQuestion(0, false);
+        }
     }
 
     $nextBtn.on('click', function () {
@@ -105,6 +125,8 @@ $(function () {
             loadQuestion(currentIndex, false);
         } else {
             clearQuizState();
+            clearDoneState();
+            $questionCard.remove();
             showSummary();
         }
     });
@@ -151,7 +173,7 @@ $(function () {
 
         $feedbackBanner.addClass('hidden');
         $nextBtnWrapper.addClass('hidden');
-        $nextBtn.text(index + 1 < total ? 'Next Question →' : 'See Results');
+        $nextBtn.text(index + 1 < total ? 'Next Question →' : 'Displaying Result...');
 
         if (restored && savedAnswer) {
             answered = true;
@@ -309,6 +331,12 @@ $(function () {
     }
 
     function showSummary() {
+        localStorage.setItem(quizStateKey + '_done', JSON.stringify({
+            score,
+            correctCount,
+            total
+        }));
+
         $('#progressSection').addClass('hidden');
         $('#quizStats .bg-white').first().removeClass('hidden');
 
