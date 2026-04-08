@@ -161,7 +161,7 @@
                             <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Host Controls</p>
                             <div class="space-y-2.5">
                                 @if ($userStatus === 'owner')
-                                    <button onclick="startQuiz()"
+                                    <button id="startQuizBtn"
                                         class="w-full flex items-center justify-center gap-2 py-3 bg-[#2979FF] text-white text-sm font-bold rounded-xl hover:bg-[#1565C0] transition shadow-sm">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-white" viewBox="0 0 24 24">
                                             <path d="M8 5v14l11-7z"/>
@@ -175,14 +175,6 @@
                                     </svg>
                                     <span id="shareUrlLabel">Share Room Link</span>
                                 </button>
-                                @if ($userStatus === 'owner')
-                                    <button class="w-full flex items-center justify-center gap-2 py-2.5 border border-red-100 text-red-400 text-sm font-medium rounded-xl hover:bg-red-50 transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                                            <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                                        </svg>
-                                        Close Room
-                                    </button>
-                                @endif
                             </div>
                         </div>
 

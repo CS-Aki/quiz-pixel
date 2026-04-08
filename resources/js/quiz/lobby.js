@@ -162,7 +162,11 @@ $(document).ready(function () {
     .error((err) => {
         console.log('Subscription error:', err);
     });
-    
+
+    $(document).on('click', '#startQuizBtn', function () {
+        window.location.href = '/quiz-answer?quizCode=' + encodeURIComponent(quizCode);
+    });
+
     // Only broadcast AFTER Echo is subscribed
     $.post('/lobby/' + quizCode + '/join')
     .done(function(res) {

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use App\Models\Quiz;
+use App\Models\QuizResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class QuizController extends Controller
 {
@@ -146,6 +148,94 @@ class QuizController extends Controller
         $quiz = Quiz::find($request->quizId);
         $quiz->status = "published";
         $quiz->save();
+    }
+
+    public function toQuizAnswer(Request $request){
+        $code = $request->quizCode;
+        $quiz = Quiz::where('code', $code)->firstOrFail();
+        $questions = $quiz->questions;
+        $user = Auth::user();
+
+        $formattedQuestions = $quiz->questions->map(function ($q) {
+            return [
+                'id'       => $q->id,
+                'text'     => $q->question, // <-- fix field name
+                'choices'  => [
+                    ['label' => 'A', 'text' => $q->choice_a],
+                    ['label' => 'B', 'text' => $q->choice_b],
+                    ['label' => 'C', 'text' => $q->choice_c],
+                    ['label' => 'D', 'text' => $q->choice_d],
+                ],
+                'correct'  => $q->answer_key, // <-- fix field name
+                'time'     => $q->time_limit ?? 30,
+                'points'   => $q->points ?? 1,
+            ];
+        });
+
+        $questionsJson = $formattedQuestions;
+
+
+        return view('answer-quiz', compact('quiz', 'questions', 'user', 'questionsJson'));
+    }
+
+    public function submitQuiz(Request $request, $quizId)
+    {
+        try {
+            $validated = $request->validate([
+                'quiz_id' => 'required|integer',
+                'quiz_code' => 'required|string',
+                'score' => 'required|integer|min:0',
+                'correct_count' => 'required|integer|min:0',
+                'total_questions' => 'required|integer|min:1',
+            ]);
+
+            // Validate quiz
+            $quiz = Quiz::where('id', $quizId)
+                ->where('code', $validated['quiz_code'])
+                ->firstOrFail();
+
+            $user = Auth::user();
+
+            // 🔒 Prevent duplicate submissions (optional but recommended)
+            $existing = QuizResult::where('quiz_id', $quiz->id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if ($existing) {
+                // Option 1: Update existing result
+                $existing->update([
+                    'score' => $validated['score'],
+                    'correct_count' => $validated['correct_count'],
+                    'total_questions' => $validated['total_questions'],
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Quiz result updated',
+                ]);
+            }
+
+            // ✅ Save new result
+            QuizResult::create([
+                'quiz_id' => $quiz->id,
+                'user_id' => $user->id,
+                'score' => $validated['score'],
+                'correct_count' => $validated['correct_count'],
+                'total_questions' => $validated['total_questions'],
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Quiz submitted successfully',
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to submit quiz',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
     /**
      * Display the specified resource.

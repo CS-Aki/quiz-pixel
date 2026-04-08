@@ -38,3 +38,5 @@ Route::post('/publish-quiz', [QuizController::class, 'publishQuiz'])->name('publ
 Route::delete('/delete-quiz/{id}', [QuizController::class, 'deleteQuiz'])->name('delete-quiz');
 Route::get('/lobby/{code}', [LobbyController::class, 'index'])->name('to-lobby');
 Route::post('/lobby/{code}/join', [LobbyController::class, 'join']);
+Route::get('/quiz-answer', [QuizController::class, 'toQuizAnswer'])->name('to-quiz-answer');
+Route::post('/quiz/{quiz}/submit', [QuizController::class, 'submitQuiz']);
