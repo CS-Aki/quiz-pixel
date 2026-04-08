@@ -86,6 +86,7 @@
                             <span class="text-xs text-slate-400" id="playerCountLabel">0 / <span id="playerLimit">{{ $quiz[0]->user_limit }}</span> </span>
                         </div>
                         <div id="playerGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-5">
+                            <input type="hidden" id="ownerId" value="{{ $ownerId }}">
                             @if ($userStatus === 'owner')
                                 <div class="player-card flex flex-col items-center gap-2 bg-[#EFF6FF] border border-blue-100 rounded-xl py-4 px-3">
                                     <div class="w-12 h-12 rounded-full bg-[#2979FF] flex items-center justify-center text-white font-bold text-sm">KG</div>

@@ -23,16 +23,19 @@ class LobbyController extends Controller
         $userOwner = "";
         $quizzes = $user->quizzes;
         $userStatus = "";
+        $ownerId=0;
 
         if ($quiz && $user->quizzes->contains('id', $quiz[0]->id)) {
             $userStatus = "owner";
             $userOwner = $user->first_name;
+            $ownerId = $user->id;
         } else {
             $userStatus = "participant";
-            $userOwner = $quiz[0]->user;
+            $ownerId =  $quiz[0]->user->id;
+            $userOwner = $quiz[0]->user->first_name;
         }
 
-        return view('lobby', compact('quiz', 'userStatus', 'user', 'userOwner'));
+        return view('lobby', compact('quiz', 'userStatus', 'user', 'userOwner', 'ownerId'));
     }
 
     public function join(string $code){
