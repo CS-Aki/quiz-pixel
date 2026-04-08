@@ -189,67 +189,10 @@
                         </span>
                     </div>
 
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-100">
-                            <div class="w-10 h-10 rounded-full bg-yellow-400 text-white flex items-center justify-center font-bold shadow-sm">
-                                1
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-bold text-slate-800 truncate">Player One</p>
-                                <p class="text-xs text-slate-500">18 correct answers</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm font-extrabold text-amber-600">95</p>
-                                <p class="text-[10px] uppercase tracking-wide text-slate-400">pts</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                            <div class="w-10 h-10 rounded-full bg-slate-400 text-white flex items-center justify-center font-bold shadow-sm">
-                                2
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-bold text-slate-800 truncate">Player Two</p>
-                                <p class="text-xs text-slate-500">16 correct answers</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm font-extrabold text-slate-700">88</p>
-                                <p class="text-[10px] uppercase tracking-wide text-slate-400">pts</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-3 p-3 rounded-2xl bg-orange-50 border border-orange-100">
-                            <div class="w-10 h-10 rounded-full bg-orange-400 text-white flex items-center justify-center font-bold shadow-sm">
-                                3
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-bold text-slate-800 truncate">Player Three</p>
-                                <p class="text-xs text-slate-500">15 correct answers</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm font-extrabold text-orange-600">82</p>
-                                <p class="text-[10px] uppercase tracking-wide text-slate-400">pts</p>
-                            </div>
-                        </div>
-
-                        <div class="pt-2 space-y-2">
-                            <div class="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-slate-50 transition">
-                                <span class="w-7 text-center text-sm font-bold text-slate-400">4</span>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-slate-700 truncate">Player Four</p>
-                                </div>
-                                <span class="text-sm font-bold text-slate-600">76</span>
-                            </div>
-
-                            <div class="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-slate-50 transition">
-                                <span class="w-7 text-center text-sm font-bold text-slate-400">5</span>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-slate-700 truncate">Player Five</p>
-                                </div>
-                                <span class="text-sm font-bold text-slate-600">70</span>
-                            </div>
-                        </div>
+                    <div id="leaderboardList" class="space-y-3">
+                        
                     </div>
+
                 </div>
             </div>
         </div>
@@ -260,6 +203,14 @@
     window.QUIZ_QUESTIONS = @json($questionsJson);
     window.QUIZ_ID = {{ $quiz->id ?? 0 }};
     window.QUIZ_CODE = "{{ $quiz->code ?? '' }}";
+    window.INITIAL_LEADERBOARD = @json($leaderboard ?? []);
+    window.AUTH_USER_ID = {{ auth()->id() ?? 0 }};
+</script>
+
+<script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+<script>
+    window.PUSHER_APP_KEY = "{{ config('broadcasting.connections.pusher.key') }}";
+    window.PUSHER_APP_CLUSTER = "{{ config('broadcasting.connections.pusher.options.cluster') }}";
 </script>
 
 @vite('resources/js/quiz/answer-quiz.js')

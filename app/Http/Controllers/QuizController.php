@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\QuizLeaderboardUpdated;
 use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\QuizResult;
@@ -174,68 +175,89 @@ class QuizController extends Controller
 
         $questionsJson = $formattedQuestions;
 
+        $leaderboard = QuizResult::with('user')
+            ->where('quiz_id', $quiz->id)
+            ->orderByDesc('score')
+            ->orderByDesc('correct_count')
+            ->latest('updated_at')
+            ->take(10)
+            ->get()
+            ->values()
+            ->map(function ($row, $index) {
+                return [
+                    'rank' => $index + 1,
+                    'user_id' => $row->user_id,
+                    'name' => $row->user?->username ?? 'Unknown Player',
+                    'score' => $row->score,
+                    'correct_count' => $row->correct_count,
+                    'total_questions' => $row->total_questions,
+                ];
+            });
 
-        return view('answer-quiz', compact('quiz', 'questions', 'user', 'questionsJson'));
+        return view('answer-quiz', compact('quiz', 'questions', 'user', 'questionsJson', 'leaderboard'));
     }
 
     public function submitQuiz(Request $request, $quizId)
     {
-        try {
-            $validated = $request->validate([
-                'quiz_id' => 'required|integer',
-                'quiz_code' => 'required|string',
-                'score' => 'required|integer|min:0',
-                'correct_count' => 'required|integer|min:0',
-                'total_questions' => 'required|integer|min:1',
-            ]);
+        $validated = $request->validate([
+            'quiz_id' => 'required|integer',
+            'quiz_code' => 'required|string',
+            'score' => 'required|integer|min:0',
+            'correct_count' => 'required|integer|min:0',
+            'total_questions' => 'required|integer|min:1',
+        ]);
 
-            // Validate quiz
-            $quiz = Quiz::where('id', $quizId)
-                ->where('code', $validated['quiz_code'])
-                ->firstOrFail();
+        $quiz = Quiz::where('id', $quizId)
+            ->where('code', $validated['quiz_code'])
+            ->firstOrFail();
 
-            $user = Auth::user();
+        $user = Auth::user();
 
-            // 🔒 Prevent duplicate submissions (optional but recommended)
-            $existing = QuizResult::where('quiz_id', $quiz->id)
-                ->where('user_id', $user->id)
-                ->first();
-
-            if ($existing) {
-                // Option 1: Update existing result
-                $existing->update([
-                    'score' => $validated['score'],
-                    'correct_count' => $validated['correct_count'],
-                    'total_questions' => $validated['total_questions'],
-                ]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Quiz result updated',
-                ]);
-            }
-
-            // ✅ Save new result
-            QuizResult::create([
+        $result = QuizResult::updateOrCreate(
+            [
                 'quiz_id' => $quiz->id,
                 'user_id' => $user->id,
+            ],
+            [
                 'score' => $validated['score'],
                 'correct_count' => $validated['correct_count'],
                 'total_questions' => $validated['total_questions'],
-            ]);
+            ]
+        );
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Quiz submitted successfully',
-            ]);
+        $leaderboard = QuizResult::with('user')
+            ->where('quiz_id', $quiz->id)
+            ->orderByDesc('score')
+            ->orderByDesc('correct_count')
+            ->latest('updated_at')
+            ->take(10)
+            ->get()
+            ->values()
+            ->map(function ($row, $index) {
+                return [
+                    'rank' => $index + 1,
+                    'user_id' => $row->user_id,
+                    'name' => $row->user?->username ?? 'Unknown Player',
+                    'score' => $row->score,
+                    'correct_count' => $row->correct_count,
+                    'total_questions' => $row->total_questions,
+                ];
+            })
+            ->toArray();
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to submit quiz',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        broadcast(new QuizLeaderboardUpdated($quiz->id, $leaderboard))->toOthers();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Quiz submitted successfully.',
+            'result' => [
+                'id' => $result->id,
+                'score' => $result->score,
+                'correct_count' => $result->correct_count,
+                'total_questions' => $result->total_questions,
+            ],
+            'leaderboard' => $leaderboard,
+        ]);
     }
     /**
      * Display the specified resource.

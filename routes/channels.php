@@ -15,3 +15,10 @@ Broadcast::channel('join-lobby.{code}', function ($user, $code) {
         'name' => $user->first_name,
     ];
 });
+
+Broadcast::channel('quiz.{quizId}', function ($user, $quizId) {
+    return [
+        'id' => $user->id,
+        'name' => $user->name,
+    ];
+});
