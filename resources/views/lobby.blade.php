@@ -13,14 +13,14 @@
                     <div>
                         <div class="flex items-center gap-2 mb-1">
                             <span class="text-xs font-semibold text-blue-100 uppercase tracking-widest">Quiz Room</span>
-                            <span class="flex items-center gap-1.5 text-xs font-semibold bg-white/20 text-white px-2.5 py-0.5 rounded-full">
+                            {{-- <span class="flex items-center gap-1.5 text-xs font-semibold bg-white/20 text-white px-2.5 py-0.5 rounded-full">
                                 <span class="w-1.5 h-1.5 bg-green-300 rounded-full animate-pulse inline-block"></span>
                                 Waiting for host
-                            </span>
+                            </span> --}}
                         </div>
                         <h1 class="text-white text-xl font-bold">{{ $quiz[0]->title }}</h1>
                         @if ($userStatus === 'owner')
-                            <p class="text-blue-100 text-sm mt-0.5">Hosted by <span class="font-semibold text-white">{{ $user->first_name }}</span></p>
+                            <p class="text-blue-100 text-sm mt-0.5">Hosted by <span class="font-semibold text-white">{{ $user->first_name . " " . $user->last_name }}</span></p>
                         @endif
 
                         @if ($userStatus === 'participant')
@@ -138,7 +138,7 @@
                             <div class="flex items-center gap-3 mb-4">
                                 <div class="w-10 h-10 rounded-full bg-[#2979FF] flex items-center justify-center text-white font-bold text-sm shrink-0">{{ $iconLabel }}</div>
                                 <div>
-                                    <p class="text-sm font-bold text-slate-800">{{ $user->first_name }}</p>
+                                    <p class="text-sm font-bold text-slate-800">{{ $user->first_name . " " . $user->last_name }}</p>
                                     @if ($userStatus === 'owner')
                                         <p class="text-xs text-[#2979FF] font-semibold">Host</p>
                                     @endif

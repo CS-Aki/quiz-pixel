@@ -32,7 +32,7 @@ function displayPlayers(users){
             let ownerCard = $(`                              
                     <div class="owner-card flex flex-col items-center gap-2 bg-[#EFF6FF] border border-blue-100 rounded-xl py-4 px-3">
                                 <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">${iconLabel}</div>
-                                <input type="hidden" id="userId" value="${user.id}">
+                                <input type="hidden" id="otherUserId" value="${user.id}">
                                 <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">${user.username}</p>
                                 <span class="text-[10px] font-bold text-green-600  bg-blue-100 px-2 py-0.5 rounded-full">Host</span>
                             </div>
@@ -74,7 +74,7 @@ function addPlayerCard(user){
 
     let iconLabel = (first + last).toUpperCase();
 
-    console.log(user);
+    console.log("inside "+ user.id + " " + ownerId);
     if (user.id == userId){
         return;
     }
@@ -83,13 +83,15 @@ function addPlayerCard(user){
         let ownerCard = $(`                              
                 <div class="owner-card flex flex-col items-center gap-2 bg-[#EFF6FF] border border-blue-100 rounded-xl py-4 px-3">
                             <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm">${iconLabel}</div>
-                            <input type="hidden" id="userId" value="${user.id}">
+                            <input type="hidden" id="otherUserId" value="${user.id}">
                             <p class="text-xs font-semibold text-slate-700 text-center truncate w-full text-center">${user.username}</p>
                             <span class="text-[10px] font-bold text-green-600  bg-blue-100 px-2 py-0.5 rounded-full">Host</span>
                         </div>
                     `);
 
         grid.append(ownerCard);
+        console.log("Appending owner");
+        console.log(grid);
         return;
     }
 
@@ -117,18 +119,19 @@ $(document).ready(function () {
         console.log('Users in lobby:', users);
         displayPlayers(users);
         $('#playerCountLabel').text(count + " / " + playerLimit);
+        $("#playerCount").text(count);
     })
 
     // 🔹 When someone joins
     .joining((user) => {
 
         let current = parseInt($('#playerCountLabel').text());
+        // console.log(user.id + " " + ownerId);
+
+        addPlayerCard(user);
         
-        if (user.id != ownerId){
-            addPlayerCard(user);
-        }
         let count = $(".player-card").length;
-        console.log("New joining length " + count);
+        // console.log("New joining length " + count);
 
         $('#playerCountLabel').text(count + " / " + playerLimit);
         $("#playerCount").text(count);
@@ -140,9 +143,16 @@ $(document).ready(function () {
 
         let current = parseInt($('#playerCountLabel').text());
         let card = $(`.otherUserId[value="${user.id}"]`);
-        console.log(card);
+        let ownerCard = $('.owner-card');
+        console.log(user.id + " " + ownerId);
         
-        card.closest('.player-card').remove();
+        if (user.id == ownerId){
+             ownerCard.remove();
+             console.log("removing owner card");
+        } else {    
+            card.closest('.player-card').remove();
+        }
+
         let count = $(".player-card").length;
 
         $('#playerCountLabel').text(count + " / " + playerLimit);

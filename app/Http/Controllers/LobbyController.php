@@ -42,12 +42,12 @@ class LobbyController extends Controller
 
         if ($quiz && $user->quizzes->contains('id', $quiz[0]->id)) {
             $userStatus = "owner";
-            $userOwner = $user->first_name;
+            $userOwner = $user->first_name . " " . $user->last_name;
             $ownerId = $user->id;
         } else {
             $userStatus = "participant";
             $ownerId =  $quiz[0]->user->id;
-            $userOwner = $quiz[0]->user->first_name;
+            $userOwner = $quiz[0]->user->first_name . ' '. $quiz[0]->user->last_name;
         }
 
         return view('lobby', compact('quiz', 'userStatus', 'user', 'userOwner', 'ownerId', 'iconLabel'));
