@@ -47,22 +47,44 @@
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white rounded-xl p-5 shadow-sm">
                         <p class="text-xs text-slate-400 font-medium uppercase tracking-wide">Quizzes Taken</p>
-                        <p class="text-3xl font-bold text-slate-800 mt-1">24</p>
-                        <p class="text-xs text-blue-500 mt-1">+3 this week</p>
+                        <p class="text-3xl font-bold text-slate-800 mt-1">{{ $quizzesTaken }}</p>
+                        <p class="text-xs text-blue-500 mt-1">
+                            @if($quizzesTakenThisWeek > 0)
+                                +{{ $quizzesTakenThisWeek }} this week
+                            @else
+                                No activity this week
+                            @endif
+                        </p>
                     </div>
                     <div class="bg-white rounded-xl p-5 shadow-sm">
                         <p class="text-xs text-slate-400 font-medium uppercase tracking-wide">Quizzes Created</p>
-                        <p class="text-3xl font-bold text-slate-800 mt-1">{{ count($quizzes) }}</p>
-                        <p class="text-xs text-blue-500 mt-1">+1 this week</p>
+                        <p class="text-3xl font-bold text-slate-800 mt-1">{{ $quizzesCreated }}</p>
+                        <p class="text-xs text-blue-500 mt-1">
+                            @if($quizzesCreatedThisWeek > 0)
+                                +{{ $quizzesCreatedThisWeek }} this week
+                            @else
+                                No activity this week
+                            @endif
+                        </p>
                     </div>
                     <div class="bg-white rounded-xl p-5 shadow-sm">
                         <p class="text-xs text-slate-400 font-medium uppercase tracking-wide">Avg. Score</p>
-                        <p class="text-3xl font-bold text-slate-800 mt-1">82%</p>
-                        <p class="text-xs text-blue-500 mt-1">↑ 4% vs last week</p>
+                        <p class="text-3xl font-bold text-slate-800 mt-1">{{ $avgScore }}%</p>
+                        <p class="text-xs mt-1 {{ $avgScoreDiff >= 0 ? 'text-blue-500' : 'text-red-400' }}">
+                            @if($avgScoreDiff > 0)
+                                ↑ {{ $avgScoreDiff }}% vs last week
+                            @elseif($avgScoreDiff < 0)
+                                ↓ {{ abs($avgScoreDiff) }}% vs last week
+                            @else
+                                Same as last week
+                            @endif
+                        </p>
                     </div>
                     <div class="bg-white rounded-xl p-5 shadow-sm">
                         <p class="text-xs text-slate-400 font-medium uppercase tracking-wide">Best Rank</p>
-                        <p class="text-3xl font-bold text-slate-800 mt-1">#2</p>
+                        <p class="text-3xl font-bold text-slate-800 mt-1">
+                            {{ $bestRank ? '#' . $bestRank : 'N/A' }}
+                        </p>
                         <p class="text-xs text-slate-400 mt-1">All time</p>
                     </div>
                 </div>
