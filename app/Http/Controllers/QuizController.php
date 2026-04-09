@@ -273,9 +273,26 @@ class QuizController extends Controller
 
     public function quizHistory()
     {
-        $results = QuizResult::where('user_id' , Auth::user()->id)->get();
+        $userId = Auth::user()->id;
+        $results = QuizResult::where('user_id' , $userId)->get();
+        $userRanking = array();
+        
+        $i = 0;
+
+        foreach ($results as $result) {
+            $ranks = QuizResult::where('quiz_id', $result->quiz_id)->orderBy('score', 'desc')->get();
+
+            foreach ($ranks as $rank) {
+                $i+=1;
+                if ($rank->user_id == $userId) {
+                    $userRanking[$result->quiz_id] = $i;
+                    $i = 0;
+                } 
+            }
+        }
+
         // $quizzes = $history->quiz;
-        return view('quiz-history', compact('results'));
+        return view('quiz-history', compact('results', 'userRanking'));
     }
     /**
      * Display the specified resource.

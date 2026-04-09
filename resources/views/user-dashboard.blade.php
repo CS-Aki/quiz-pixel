@@ -22,7 +22,7 @@
                 <!-- Welcome Banner + Quick Actions -->
                 <div class="bg-gradient-to-r from-[#2979FF] to-[#29B6F6] rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                        <h1 class="text-white text-xl font-bold">Welcome back, {{ Auth::user()->first_name }}! 👋</h1>
+                        <h1 class="text-white text-xl font-bold">Welcome back, {{ Auth::user()->first_name }}!</h1>
                         <p class="text-blue-100 text-sm mt-1">What would you like to do today?</p>
                     </div>
                     <div class="flex flex-wrap gap-3">
@@ -74,49 +74,45 @@
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                             <h2 class="text-sm font-bold text-slate-800">Quiz History</h2>
-                            <a href="javascript:void(0)" class="text-xs text-[#2979FF] font-medium hover:underline">View all</a>
+                            <a href="{{ route('to-quiz-history') }}" class="text-xs text-[#2979FF] font-medium hover:underline">View all</a>
                         </div>
                         <div class="divide-y divide-gray-50">
                             <!-- Row -->
-                            <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">GK</div>
-                                    <div>
-                                        <p class="text-sm font-medium text-slate-800">General Knowledge</p>
-                                        <p class="text-xs text-slate-400">April 3, 2026</p>
+                            <div class="divide-y divide-gray-50">
+                                @forelse ($results as $result)
+                                    @php
+                                        $scorePercentage = $result->total_questions > 0
+                                            ? round(($result->correct_count / $result->total_questions) * 100)
+                                            : 0;
+
+                                        if ($scorePercentage >= 80) {
+                                            $badgeClasses = 'bg-green-100 text-green-700';
+                                        } elseif ($scorePercentage >= 60) {
+                                            $badgeClasses = 'bg-yellow-100 text-yellow-700';
+                                        } else {
+                                            $badgeClasses = 'bg-red-100 text-red-700';
+                                        }
+                                    @endphp
+
+                                    <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">
+                                                {{ strtoupper(substr($result->quiz->title, 0, 2)) }}
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-slate-800">{{ $result->quiz->title }}</p>
+                                                <p class="text-xs text-slate-400">{{ $result->created_at->format('M j, Y') }}</p>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs font-semibold px-3 py-1 rounded-full {{ $badgeClasses }}">
+                                            {{ $scorePercentage }}%
+                                        </span>
                                     </div>
-                                </div>
-                                <span class="text-xs font-semibold px-3 py-1 bg-green-100 text-green-700 rounded-full">90%</span>
-                            </div>
-                            <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs">SC</div>
-                                    <div>
-                                        <p class="text-sm font-medium text-slate-800">Science & Nature</p>
-                                        <p class="text-xs text-slate-400">April 1, 2026</p>
+                                @empty
+                                    <div class="px-6 py-8 text-center text-sm text-slate-400">
+                                        No quiz history yet.
                                     </div>
-                                </div>
-                                <span class="text-xs font-semibold px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">74%</span>
-                            </div>
-                            <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-xs">HX</div>
-                                    <div>
-                                        <p class="text-sm font-medium text-slate-800">History Trivia</p>
-                                        <p class="text-xs text-slate-400">March 29, 2026</p>
-                                    </div>
-                                </div>
-                                <span class="text-xs font-semibold px-3 py-1 bg-green-100 text-green-700 rounded-full">88%</span>
-                            </div>
-                            <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xs">MT</div>
-                                    <div>
-                                        <p class="text-sm font-medium text-slate-800">Math Challenge</p>
-                                        <p class="text-xs text-slate-400">March 27, 2026</p>
-                                    </div>
-                                </div>
-                                <span class="text-xs font-semibold px-3 py-1 bg-red-100 text-red-700 rounded-full">58%</span>
+                                @endforelse
                             </div>
                         </div>
                     </div>

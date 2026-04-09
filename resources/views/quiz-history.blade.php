@@ -179,7 +179,7 @@
                                             data-correct="{{ $result->correct_count }}"
                                             data-room="{{ $quizCode }}"
                                             data-date="{{ $dateTaken }}"
-                                            data-rank="{{ $result->rank ? '#' . $result->rank : 'N/A' }}"
+                                            data-rank="{{ $userRanking[$result->quiz_id] ? '#' . $userRanking[$result->quiz_id] : 'N/A' }}"
                                             data-host="{{ $result->quiz->user->first_name . ' ' . $result->quiz->user->last_name?? 'Unknown Host' }}"
                                             data-ring-color="{{ $modalRingColor }}"
                                             data-badge-class="{{ $modalBadgeClass }}"

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Quiz;
+use App\Models\QuizResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 
@@ -15,8 +16,9 @@ class DashboardController extends Controller
     {
         $userId = FacadesAuth::user()->id;
         $quizzes = Quiz::where('user_id', $userId)->get();
+        $results = QuizResult::where('user_id' , $userId)->get();
 
-        return view('user-dashboard', compact('quizzes'));
+        return view('user-dashboard', compact('quizzes', 'results'));
     }
 
     /**
