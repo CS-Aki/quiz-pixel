@@ -39,14 +39,12 @@
 
                 <!-- Quiz History -->
                 <li>
-                    <a href="javascript:void(0)"
-                        class="menu-item text-slate-800 text-[15px] font-medium flex items-center cursor-pointer hover:bg-[#DBEAFE] rounded-md px-3 py-3 transition-all duration-300"
-                        {{ $currentTab === 'history' ? 'bg-[#DBEAFE] text-green-800' : 'text-slate-800 hover:bg-[#DBEAFE]' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-[18px] h-[18px] mr-3" viewBox="0 0 510 510">
-                            <g fill-opacity=".9">
-                                <path d="M255 0C114.75 0 0 114.75 0 255s114.75 255 255 255 255-114.75 255-255S395.25 0 255 0zm0 459c-112.2 0-204-91.8-204-204S142.8 51 255 51s204 91.8 204 204-91.8 204-204 204z"/>
-                                <path d="M267.75 127.5H229.5v153l132.6 81.6 20.4-33.15-114.75-68.85z"/>
-                            </g>
+                    <a href="{{ route("to-quiz-history") }}" 
+                        class="menu-item text-[15px] font-medium flex items-center cursor-pointer rounded-md px-3 py-3 transition-all duration-300
+                        {{ $currentTab === 'history' ? 'bg-[#DBEAFE] text-green-800' : 'text-slate-800 hover:bg-[#DBEAFE]' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-[18px] h-[18px] mr-3" viewBox="0 0 64 64">
+                            <path d="M16.4 29.594a2.08 2.08 0 0 1 2.08-2.08h31.2a2.08 2.08 0 1 1 0 4.16h-31.2a2.08 2.08 0 0 1-2.08-2.08zm0 12.48a2.08 2.08 0 0 1 2.08-2.08h12.48a2.08 2.08 0 1 1 0 4.16H18.48a2.08 2.08 0 0 1-2.08-2.08z"/>
+                            <path fill-rule="evenodd" d="M.8 18.154c0-8.041 6.519-14.56 14.56-14.56v-1.04a2.08 2.08 0 1 1 4.16 0v1.04h10.4v-1.04a2.08 2.08 0 1 1 4.16 0v1.04h10.4v-1.04a2.08 2.08 0 1 1 4.16 0v1.04c8.041 0 14.56 6.519 14.56 14.56v30.16c0 8.041-6.519 14.56-14.56 14.56H15.36C7.319 62.874.8 56.355.8 48.314zm33.28-10.4h10.4v1.04a2.08 2.08 0 1 0 4.16 0v-1.04c5.744 0 10.4 4.656 10.4 10.4v30.16c0 5.744-4.656 10.4-10.4 10.4H15.36c-5.744 0-10.4-4.656-10.4-10.4v-30.16c0-5.744 4.656-10.4 10.4-10.4v1.04a2.08 2.08 0 1 0 4.16 0v-1.04h10.4v1.04a2.08 2.08 0 1 0 4.16 0z" clip-rule="evenodd"/>
                         </svg>
                         <span>Quiz History</span>
                     </a>

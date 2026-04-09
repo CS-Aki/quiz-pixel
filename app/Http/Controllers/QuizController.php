@@ -259,6 +259,13 @@ class QuizController extends Controller
             'leaderboard' => $leaderboard,
         ]);
     }
+
+    public function quizHistory()
+    {
+        $results = QuizResult::where('user_id' , Auth::user()->id)->get();
+        // $quizzes = $history->quiz;
+        return view('quiz-history', compact('results'));
+    }
     /**
      * Display the specified resource.
      */
