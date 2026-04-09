@@ -158,13 +158,26 @@ $(document).ready(function () {
         $('#playerCountLabel').text(count + " / " + playerLimit);
         $("#playerCount").text(count);
     })
+    
+    .listen('.quiz.started', (e) => {
+        window.location.href = '/quiz-answer?quizCode=' + encodeURIComponent(e.quizCode);
+    })
+
 
     .error((err) => {
         console.log('Subscription error:', err);
     });
 
     $(document).on('click', '#startQuizBtn', function () {
-        window.location.href = '/quiz-answer?quizCode=' + encodeURIComponent(quizCode);
+        // Host posts to server to broadcast the event
+        $.post('/lobby/' + quizCode + '/start')
+            .done(function () {
+                // Host redirects immediately themselves
+                window.location.href = '/quiz-answer?quizCode=' + encodeURIComponent(quizCode);
+            })
+            .fail(function (err) {
+                console.error('Failed to start quiz:', err);
+            });
     });
 
     // Only broadcast AFTER Echo is subscribed

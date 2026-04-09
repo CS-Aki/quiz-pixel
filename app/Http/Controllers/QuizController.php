@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\QuizLeaderboardUpdated;
+use App\Events\QuizStarted;
 use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\QuizResult;
@@ -258,6 +259,16 @@ class QuizController extends Controller
             ],
             'leaderboard' => $leaderboard,
         ]);
+    }
+
+    public function start(Request $request, $quizCode)
+    {
+        // Optional host guard
+        abort_if(Auth::id() !== Quiz::where('code', $quizCode)->value('user_id'), 403);
+
+        broadcast(new QuizStarted($quizCode)); // ← no ->toOthers()
+
+        return response()->json(['status' => 'started']);
     }
 
     public function quizHistory()

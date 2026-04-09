@@ -203,9 +203,11 @@ $(function () {
         const isCorrect = selected === q.correct;
 
         if (isCorrect) {
-            score += q.points;
+            const timeBonus = Math.max(timeLeft, 0.5);
+            score += q.points * timeBonus;
             correctCount++;
         }
+        
 
         window.quizAnswers[currentIndex] = {
             selected,
@@ -249,7 +251,7 @@ $(function () {
         });
 
         $feedbackBanner.removeClass('hidden');
-
+        const timeBonus = Math.max(timeLeft, 0.5);
         if (savedAnswer.timedOut) {
             $feedbackInner.attr('class', 'flex items-center gap-3 rounded-2xl px-4 py-4 bg-amber-50 border border-amber-200');
             $feedbackIcon.attr('class', 'w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 bg-amber-500 text-white text-sm font-bold').text('!');
@@ -260,7 +262,7 @@ $(function () {
         if (savedAnswer.isCorrect) {
             $feedbackInner.attr('class', 'flex items-center gap-3 rounded-2xl px-4 py-4 bg-green-50 border border-green-200');
             $feedbackIcon.attr('class', 'w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 bg-green-500 text-white text-sm font-bold').text('✓');
-            $feedbackText.attr('class', 'text-sm font-semibold text-green-700').text(`Correct! +${q.points} point${q.points !== 1 ? 's' : ''}`);
+            $feedbackText.attr('class', 'text-sm font-semibold text-green-700').text(`Correct! +${q.points * timeBonus} point${q.points !== 1 ? 's' : ''}`);
         } else {
             $feedbackInner.attr('class', 'flex items-center gap-3 rounded-2xl px-4 py-4 bg-red-50 border border-red-200');
             $feedbackIcon.attr('class', 'w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 bg-red-500 text-white text-sm font-bold').text('✕');
@@ -331,8 +333,10 @@ $(function () {
     }
 
     function showSummary() {
+        const timeBonus = Math.max(timeLeft, 0.5);
+        let temp = timeBonus * score;
         localStorage.setItem(quizStateKey + '_done', JSON.stringify({
-            score,
+            temp,
             correctCount,
             total
         }));
@@ -341,8 +345,8 @@ $(function () {
         $('#quizStats .bg-white').first().removeClass('hidden');
 
         const percent = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-
-        $finalScore.text(score);
+        
+        $finalScore.text(temp);
         $finalCorrect.text(`${correctCount}/${total}`);
         $finalPercent.text(`${percent}%`);
 
@@ -363,6 +367,8 @@ $(function () {
     }
 
     function submitResults() {
+        const timeBonus = Math.max(timeLeft, 0.5);
+        
         $.ajax({
             url: `/quiz/${window.QUIZ_ID}/submit`,
             type: 'POST',
@@ -370,7 +376,7 @@ $(function () {
                 _token: $('meta[name="csrf-token"]').attr('content'),
                 quiz_id: window.QUIZ_ID,
                 quiz_code: window.QUIZ_CODE,
-                score: score,
+                score: score * timeBonus,
                 correct_count: correctCount,
                 total_questions: total
             },

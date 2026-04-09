@@ -41,3 +41,4 @@ Route::post('/lobby/{code}/join', [LobbyController::class, 'join']);
 Route::get('/quiz-answer', [QuizController::class, 'toQuizAnswer'])->name('to-quiz-answer');
 Route::post('/quiz/{quiz}/submit', [QuizController::class, 'submitQuiz']);
 Route::get('/quiz-history', [QuizController::class, 'quizHistory'])->name('to-quiz-history');
+Route::post('/lobby/{quizCode}/start', [QuizController::class, 'start']);
