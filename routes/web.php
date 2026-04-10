@@ -42,3 +42,5 @@ Route::get('/quiz-answer', [QuizController::class, 'toQuizAnswer'])->name('to-qu
 Route::post('/quiz/{quiz}/submit', [QuizController::class, 'submitQuiz']);
 Route::get('/quiz-history', [QuizController::class, 'quizHistory'])->name('to-quiz-history');
 Route::post('/lobby/{quizCode}/start', [QuizController::class, 'start']);
+Route::get('/quiz/{id}/results',        [QuizController::class, 'quizResults'])->name('to-quiz-results');
+Route::get('/quiz/{id}/results/export', [QuizController::class, 'exportQuizResults'])->name('to-quiz-results-export');

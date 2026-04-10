@@ -192,16 +192,13 @@
                                     </div>
                                 </div>
                                 <div class="flex gap-2 px-5 pb-4">
-                                    <button class="flex-1 flex items-center justify-center gap-1.5 py-2 border border-gray-200 text-slate-600 text-xs font-semibold rounded-xl hover:bg-gray-50 transition">
+                                    <a href="{{ route('to-quiz-results', ['id' => $quiz->id]) }}" class="flex-1 flex items-center justify-center gap-1.5 py-2 border border-gray-200 text-slate-600 text-xs font-semibold rounded-xl hover:bg-gray-50 transition">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5c0-1.1-.89-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
                                         Results
-                                    </button>
+                                    </a>
                                     <button class="flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-200 text-slate-500 text-xs font-medium rounded-xl hover:bg-gray-50 transition">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>
                                         Duplicate
-                                    </button>
-                                    <button class="flex items-center justify-center px-3 py-2 border border-gray-200 text-slate-400 text-xs rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/></svg>
                                     </button>
                                 </div>
                             </div>

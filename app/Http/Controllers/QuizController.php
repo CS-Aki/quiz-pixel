@@ -10,6 +10,7 @@ use App\Models\QuizResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class QuizController extends Controller
 {
@@ -314,6 +315,173 @@ class QuizController extends Controller
 
         // $quizzes = $history->quiz;
         return view('quiz-history', compact('results', 'userRanking', 'quizzesTaken', 'avgScore', 'bestScore', 'lowestScore'));
+    }
+
+    public function quizResults(string $id)
+    {
+        $quiz = Quiz::with('questions')->findOrFail($id);
+    
+        // Only the quiz owner may view the results dashboard
+        abort_if(Auth::id() !== $quiz->user_id, 403);
+    
+        // ── All submissions for this quiz ──────────────────────────
+        $results = QuizResult::with('user')
+            ->where('quiz_id', $quiz->id)
+            ->orderByDesc('score')
+            ->orderByDesc('correct_count')
+            ->get();
+    
+        $totalPlayers = $results->count();
+    
+        // ── Summary stats ──────────────────────────────────────────
+        $avgScore = $totalPlayers > 0
+            ? round($results->avg(fn($r) => $r->total_questions > 0
+                ? ($r->correct_count / $r->total_questions) * 100
+                : 0))
+            : 0;
+    
+        $highestScore = $results->max('score') ?? 0;
+    
+        // Completion rate: players who answered all questions
+        $completionRate = $totalPlayers > 0
+            ? round(
+                $results->filter(fn($r) => $r->total_questions > 0
+                    && $r->correct_count + ($r->total_questions - $r->correct_count) === $r->total_questions
+                )->count() / $totalPlayers * 100
+            )
+            : 0;
+    
+        // Since every submitted row is a "completed" attempt, use total submissions
+        // as the completion proxy unless you track partial submissions separately.
+        $completionRate = $totalPlayers > 0
+            ? round($results->where('total_questions', '>', 0)->count() / $totalPlayers * 100)
+            : 0;
+    
+        // ── Score distribution bands ───────────────────────────────
+        $scoreBand90      = 0;
+        $scoreBand70      = 0;
+        $scoreBand50      = 0;
+        $scoreBandBelow50 = 0;
+    
+        foreach ($results as $r) {
+            if ($r->total_questions <= 0) continue;
+            $pct = ($r->correct_count / $r->total_questions) * 100;
+    
+            if ($pct >= 90)      $scoreBand90++;
+            elseif ($pct >= 70)  $scoreBand70++;
+            elseif ($pct >= 50)  $scoreBand50++;
+            else                 $scoreBandBelow50++;
+        }
+    
+        // ── Leaderboard collection (with rank & player_name) ───────
+        $leaderboard = $results->values()->map(function ($row, $index) {
+            $row->rank        = $index + 1;
+            $row->player_name = $row->user?->first_name . " " . $row->user?->last_name ?? 'Unknown Player';
+            return $row;
+        });
+    
+        // ── Per-question accuracy ──────────────────────────────────
+        // QuizResult does NOT store per-answer breakdown in the current schema,
+        // so we derive accuracy from correct_count distributed evenly as a
+        // best-effort approximation, OR you can join a quiz_answers table if
+        // you have one. The structure below is ready to accept a real answers
+        // table — just swap the placeholder logic.
+        $questions     = $quiz->questions;
+        $questionStats = [];
+    
+        foreach ($questions as $idx => $question) {
+            // ── If you have a QuizAnswer model with (quiz_result_id, question_id, is_correct):
+            // $correctCount = \App\Models\QuizAnswer::where('question_id', $question->id)
+            //     ->where('is_correct', true)->count();
+            // $totalCount   = \App\Models\QuizAnswer::where('question_id', $question->id)->count();
+    
+            // ── Fallback: use aggregate correct_count / total_questions ratio ──
+            $totalCount   = $totalPlayers;
+            $correctCount = $totalPlayers > 0
+                ? round($results->avg(fn($r) => $r->total_questions > 0
+                    ? ($r->correct_count / $r->total_questions)
+                    : 0) * $totalPlayers)
+                : 0;
+    
+            $accuracy = $totalCount > 0 ? round(($correctCount / $totalCount) * 100) : 0;
+    
+            // Build human-readable correct answer label
+            $answerKey     = strtoupper($question->answer_key);
+            $choiceField   = 'choice_' . strtolower($answerKey);
+            $correctAnswer = $answerKey . '. ' . ($question->{$choiceField} ?? '—');
+    
+            $questionStats[] = [
+                'question'       => $question->question,
+                'correct_answer' => $correctAnswer,
+                'correct_count'  => $correctCount,
+                'total'          => $totalCount,
+                'accuracy'       => $accuracy,
+            ];
+        }
+    
+        return view('quiz-result', compact(
+            'quiz',
+            'leaderboard',
+            'totalPlayers',
+            'avgScore',
+            'highestScore',
+            'completionRate',
+            'scoreBand90',
+            'scoreBand70',
+            'scoreBand50',
+            'scoreBandBelow50',
+            'questionStats',
+        ));
+    }
+
+    public function exportQuizResults(string $id): StreamedResponse
+    {
+        $quiz = Quiz::findOrFail($id);
+        abort_if(Auth::id() !== $quiz->user_id, 403);
+    
+        $results = QuizResult::with('user')
+            ->where('quiz_id', $quiz->id)
+            ->orderByDesc('score')
+            ->get();
+    
+        $filename = 'quiz-results-' . str_replace(' ', '-', strtolower($quiz->title)) . '-' . now()->format('Ymd') . '.csv';
+    
+        return response()->streamDownload(function () use ($results, $quiz) {
+    
+            $handle = fopen('php://output', 'w');
+    
+            // Header row
+            fputcsv($handle, [
+                'Rank',
+                'Player',
+                'Score (pts)',
+                'Correct Answers',
+                'Total Questions',
+                'Accuracy (%)',
+                'Submitted At',
+            ]);
+    
+            foreach ($results->values() as $index => $row) {
+                $accuracy = $row->total_questions > 0
+                    ? round(($row->correct_count / $row->total_questions) * 100)
+                    : 0;
+    
+                fputcsv($handle, [
+                    $index + 1,
+                    $row->user?->first_name . " " . $row->user?->last_name?? 'Unknown Player',
+                    $row->score,
+                    $row->correct_count,
+                    $row->total_questions,
+                    $accuracy . '%',
+                    $row->created_at->format('Y-m-d H:i:s'),
+                ]);
+            }
+    
+            fclose($handle);
+    
+        }, $filename, [
+            'Content-Type' => 'text/csv',
+        ]);
     }
     /**
      * Display the specified resource.
