@@ -164,7 +164,49 @@
                                 </div>
                             </div>
                         @endif
-                    @endforeach
+
+                        @if ($quiz->status == "archived")
+                            <div class="quiz-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 flex flex-col" data-status="closed" data-title="PH History Basics">
+                                <div class="h-1.5 bg-slate-300"></div>
+                                <div class="p-5 flex-1">
+                                    <div class="flex items-start justify-between gap-2 mb-3">
+                                        <h3 class="text-sm font-bold text-slate-800 leading-snug">{{ $quiz->title }}</h3>
+                                        <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-500 rounded-full whitespace-nowrap">Closed</span>
+                                    </div>
+                                    <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400 mb-4">
+                                        <span>{{ count($quiz->questions) }} questions</span>
+                                    </div>
+                                    <div class="flex divide-x divide-gray-100 border-t border-gray-100 pt-3 -mx-5 px-5">
+                                        <div class="flex-1 text-center">
+                                            <p class="text-base font-bold text-slate-800">{{ count($quiz->quizResults) }}</p>
+                                            <p class="text-xs text-slate-400 mt-0.5">Players</p>
+                                        </div>
+                                        <div class="flex-1 text-center">
+                                            <p class="text-base font-bold text-slate-800">88%</p>
+                                            <p class="text-xs text-slate-400 mt-0.5">Avg score</p>
+                                        </div>
+                                        <div class="flex-1 text-center">
+                                            <p class="text-base font-bold text-slate-800">1000 pts</p>
+                                            <p class="text-xs text-slate-400 mt-0.5">Highest Score</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 px-5 pb-4">
+                                    <button class="flex-1 flex items-center justify-center gap-1.5 py-2 border border-gray-200 text-slate-600 text-xs font-semibold rounded-xl hover:bg-gray-50 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5c0-1.1-.89-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+                                        Results
+                                    </button>
+                                    <button class="flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-200 text-slate-500 text-xs font-medium rounded-xl hover:bg-gray-50 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>
+                                        Duplicate
+                                    </button>
+                                    <button class="flex items-center justify-center px-3 py-2 border border-gray-200 text-slate-400 text-xs rounded-xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm0 2h6v1H9zm-2 2h10v12H7zm2 2v8h2V9zm4 0v8h2V9z"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach 
                     <!-- Card -->
                     {{-- <div class="quiz-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 flex flex-col" data-status="active" data-title="World Capitals Quiz">
                         <div class="h-1.5 bg-[#2979FF]"></div>

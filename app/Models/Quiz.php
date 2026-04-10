@@ -28,6 +28,11 @@ class Quiz extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function quizResults()
+    {
+        return $this->hasMany(QuizResult::class);
+    }
+
     protected $casts = [
         'user_limit' => 'integer',
     ];

@@ -123,7 +123,13 @@ class QuizController extends Controller
     public function quizList(){
         $userId = Auth::user()->id;
         $quizzes = Quiz::where('user_id', $userId)->get();
-        return view('quiz-list', compact('quizzes'));
+        $results = QuizResult::where('user_id' , $userId)->get();
+
+        $avgScore = $results->where('total_questions', '>', 0)
+                    ->avg(fn($r) => ($r->correct_count / $r->total_questions) * 100);
+        $avgScore = $avgScore ? round($avgScore) : 0;
+
+        return view('quiz-list', compact('quizzes', 'avgScore'));
     }
 
     public function deleteQuestion(string $id){
@@ -137,12 +143,13 @@ class QuizController extends Controller
     }
 
     public function deleteQuiz(string $id){
-        $quiz = Quiz::find($id);
-        $quiz->delete();
+        // $quiz = Quiz::find($id);
+        // $quiz->delete();
+        $quiz = Quiz::where('id', $id)->update(['status' => 'archived']);
 
         return response()->json([
             'success' => true,
-            'message' => 'Quiz deleted successfully.',
+            'message' => 'Quiz closed successfully.',
         ]);
     }
 

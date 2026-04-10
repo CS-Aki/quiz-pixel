@@ -29,7 +29,7 @@ $(document).ready(function () {
 
          Swal.fire({
             title: 'Are you sure?',
-            text: "This question will be permanently deleted.",
+            text: "This quiz will be permanently closed.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ef4444',
@@ -43,14 +43,14 @@ $(document).ready(function () {
                     type: 'POST',
                     data: form.serialize(),
                     success: function () {
-                        form.closest('.quiz-card').remove();
+                        // form.closest('.quiz-card').remove();
                     },
                     error: function (xhr) {
                         console.error(xhr.responseText);
 
                         Swal.fire(
                             'Error!',
-                            'Failed to delete question.',
+                            'Failed to close quiz.',
                             'error'
                         );
                     }
