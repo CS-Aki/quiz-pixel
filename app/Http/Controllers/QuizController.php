@@ -275,6 +275,20 @@ class QuizController extends Controller
     {
         $userId = Auth::user()->id;
         $results = QuizResult::where('user_id' , $userId)->get();
+
+        $quizzesTaken = $results->count();
+        $avgScore = $results->where('total_questions', '>', 0)
+                    ->avg(fn($r) => ($r->correct_count / $r->total_questions) * 100);
+        $avgScore = $avgScore ? round($avgScore) : 0;
+
+        $bestScore = QuizResult::where('quiz_id', $results[0]->quiz_id)
+            ->orderByDesc('score')->firstOrFail();
+        
+        $bestScore = $bestScore->score;
+        $lowestScore = QuizResult::where('quiz_id', $results[0]->quiz_id)
+            ->orderBy('score', 'asc')->firstOrFail();
+        $lowestScore = $lowestScore->score;
+
         $userRanking = array();
         
         $i = 0;
@@ -292,7 +306,7 @@ class QuizController extends Controller
         }
 
         // $quizzes = $history->quiz;
-        return view('quiz-history', compact('results', 'userRanking'));
+        return view('quiz-history', compact('results', 'userRanking', 'quizzesTaken', 'avgScore', 'bestScore', 'lowestScore'));
     }
     /**
      * Display the specified resource.

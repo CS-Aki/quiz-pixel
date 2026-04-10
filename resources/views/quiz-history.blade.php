@@ -60,7 +60,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-slate-400 font-medium">Total Quizzes</p>
-                            <p class="text-xl font-bold text-slate-800">24</p>
+                            <p class="text-xl font-bold text-slate-800">{{ $quizzesTaken }}</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-xl p-4 shadow-sm flex items-center gap-3">
@@ -71,7 +71,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-slate-400 font-medium">Avg. Score</p>
-                            <p class="text-xl font-bold text-slate-800">82%</p>
+                            <p class="text-xl font-bold text-slate-800">{{ $avgScore }}%</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-xl p-4 shadow-sm flex items-center gap-3">
@@ -82,7 +82,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-slate-400 font-medium">Best Score</p>
-                            <p class="text-xl font-bold text-slate-800">98%</p>
+                            <p class="text-xl font-bold text-slate-800">{{ $bestScore }} pts</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-xl p-4 shadow-sm flex items-center gap-3">
@@ -93,7 +93,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-slate-400 font-medium">Lowest Score</p>
-                            <p class="text-xl font-bold text-slate-800">58%</p>
+                            <p class="text-xl font-bold text-slate-800">{{ $lowestScore }} pts</p>
                         </div>
                     </div>
                 </div>
