@@ -21,7 +21,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                         <div class="flex items-center gap-2 mb-1">
-                            <a href="{{ route('to-quiz-list') }}" class="text-sm text-slate-400 hover:text-[#2979FF] transition">My Quizzes</a>
+                            <a href="{{ route('to-quiz-history') }}" class="text-sm text-slate-400 hover:text-[#2979FF] transition">My Quizzes</a>
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 fill-slate-300" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
                             <span class="text-sm text-slate-700 font-medium">{{ $quiz->title }}</span>
                         </div>
@@ -273,19 +273,25 @@
                 {{-- ── All Players Table ── --}}
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
-                        <h2 class="text-sm font-bold text-slate-800">All Players</h2>
-                        <div class="flex items-center gap-2">
+                        <div>
+                            <h2 class="text-sm font-bold text-slate-800">All Players</h2>
+                            <p id="playerCount" class="text-xs text-slate-400 mt-0.5">Showing {{ count($leaderboard) }} players</p>
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <!-- Search -->
                             <div class="relative">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24"><path d="M10 2a8 8 0 1 0 4.906 14.32l4.387 4.387 1.414-1.414-4.387-4.387A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12A6 6 0 0 1 10 4z"/></svg>
                                 <input type="text" id="playerSearch" placeholder="Search player..."
-                                    class="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2979FF] bg-white w-44 transition" />
+                                    class="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2979FF] bg-white w-48 transition" />
                             </div>
+                            <!-- Sort -->
                             <select id="playerSort"
                                 class="text-sm border border-gray-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#2979FF] bg-white text-slate-600 transition cursor-pointer">
-                                <option value="rank">Sort: Rank</option>
+                                <option value="rank">Rank (Default)</option>
                                 <option value="score-high">Score: High → Low</option>
                                 <option value="score-low">Score: Low → High</option>
-                                <option value="name">Name A–Z</option>
+                                <option value="name-asc">Name: A → Z</option>
+                                <option value="name-desc">Name: Z → A</option>
                             </select>
                         </div>
                     </div>
@@ -458,7 +464,7 @@
     </div>
 </div>
 
+@vite('resources/js/quiz/quiz-result.js')
 @vite('resources/js/user/logout.js')
-@vite('resources/js/user/quiz-result.js')
 
 </x-layout>
