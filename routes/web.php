@@ -44,3 +44,10 @@ Route::get('/quiz-history', [QuizController::class, 'quizHistory'])->name('to-qu
 Route::post('/lobby/{quizCode}/start', [QuizController::class, 'start']);
 Route::get('/quiz/{id}/results',        [QuizController::class, 'quizResults'])->name('to-quiz-results');
 Route::get('/quiz/{id}/results/export', [QuizController::class, 'exportQuizResults'])->name('to-quiz-results-export');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('to-profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
