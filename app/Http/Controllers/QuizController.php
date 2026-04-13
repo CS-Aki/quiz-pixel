@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\QuizLeaderboardUpdated;
+use App\Events\QuizResultSubmitted;
 use App\Events\QuizStarted;
 use App\Models\Question;
 use App\Models\Quiz;
@@ -14,25 +15,17 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class QuizController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
        
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('create-quiz');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request){
         $userId = Auth::user()->id;
         $status = $request->status;
@@ -209,13 +202,13 @@ class QuizController extends Controller
     public function submitQuiz(Request $request, $quizId)
     {
         $validated = $request->validate([
-            'quiz_id' => 'required|integer',
-            'quiz_code' => 'required|string',
-            'score' => 'required|integer|min:0',
-            'correct_count' => 'required|integer|min:0',
-            'total_questions' => 'required|integer|min:1',
+            'quiz_id'        => 'required|integer',
+            'quiz_code'      => 'required|string',
+            'score'          => 'required|numeric|min:0',  // numeric not integer
+            'correct_count'  => 'required|integer|min:0',
+            'total_questions'=> 'required|integer|min:1',
         ]);
-
+    
         $quiz = Quiz::where('id', $quizId)
             ->where('code', $validated['quiz_code'])
             ->firstOrFail();
@@ -228,8 +221,8 @@ class QuizController extends Controller
                 'user_id' => $user->id,
             ],
             [
-                'score' => $validated['score'],
-                'correct_count' => $validated['correct_count'],
+                'score'           => (int) round($validated['score']),  // store as rounded int
+                'correct_count'   => $validated['correct_count'],
                 'total_questions' => $validated['total_questions'],
             ]
         );
@@ -244,25 +237,28 @@ class QuizController extends Controller
             ->values()
             ->map(function ($row, $index) {
                 return [
-                    'rank' => $index + 1,
-                    'user_id' => $row->user_id,
-                    'name' => $row->user?->username ?? 'Unknown Player',
-                    'score' => $row->score,
-                    'correct_count' => $row->correct_count,
+                    'rank'            => $index + 1,
+                    'user_id'         => $row->user_id,
+                    'name'            => $row->user?->first_name . ' ' . $row->user?->last_name ?? 'Unknown Player',
+                    'score'           => $row->score,
+                    'correct_count'   => $row->correct_count,
                     'total_questions' => $row->total_questions,
                 ];
             })
             ->toArray();
 
+        $result->load('user');  // needed so broadcastWith() can access ->user
+
         broadcast(new QuizLeaderboardUpdated($quiz->id, $leaderboard))->toOthers();
+        broadcast(new QuizResultSubmitted($quiz->code, $result));  // remove toOthers() so host receives it
 
         return response()->json([
-            'success' => true,
-            'message' => 'Quiz submitted successfully.',
-            'result' => [
-                'id' => $result->id,
-                'score' => $result->score,
-                'correct_count' => $result->correct_count,
+            'success'    => true,
+            'message'    => 'Quiz submitted successfully.',
+            'result'     => [
+                'id'              => $result->id,
+                'score'           => $result->score,
+                'correct_count'   => $result->correct_count,
                 'total_questions' => $result->total_questions,
             ],
             'leaderboard' => $leaderboard,
@@ -271,12 +267,16 @@ class QuizController extends Controller
 
     public function start(Request $request, $quizCode)
     {
-        // Optional host guard
-        abort_if(Auth::id() !== Quiz::where('code', $quizCode)->value('user_id'), 403);
+        $quiz = Quiz::where('code', $quizCode)->firstOrFail();
 
-        broadcast(new QuizStarted($quizCode)); // ← no ->toOthers()
+        abort_if(Auth::id() !== $quiz->user_id, 403);
 
-        return response()->json(['status' => 'started']);
+        broadcast(new QuizStarted($quizCode));
+
+        return response()->json([
+            'status'  => 'started',
+            'quiz_id' => $quiz->id,
+        ]);
     }
 
     public function quizHistory()
@@ -321,10 +321,8 @@ class QuizController extends Controller
     {
         $quiz = Quiz::with('questions')->findOrFail($id);
     
-        // Only the quiz owner may view the results dashboard
         abort_if(Auth::id() !== $quiz->user_id, 403);
     
-        // ── All submissions for this quiz ──────────────────────────
         $results = QuizResult::with('user')
             ->where('quiz_id', $quiz->id)
             ->orderByDesc('score')
@@ -333,7 +331,6 @@ class QuizController extends Controller
     
         $totalPlayers = $results->count();
     
-        // ── Summary stats ──────────────────────────────────────────
         $avgScore = $totalPlayers > 0
             ? round($results->avg(fn($r) => $r->total_questions > 0
                 ? ($r->correct_count / $r->total_questions) * 100
@@ -342,7 +339,6 @@ class QuizController extends Controller
     
         $highestScore = $results->max('score') ?? 0;
     
-        // Completion rate: players who answered all questions
         $completionRate = $totalPlayers > 0
             ? round(
                 $results->filter(fn($r) => $r->total_questions > 0
@@ -351,13 +347,10 @@ class QuizController extends Controller
             )
             : 0;
     
-        // Since every submitted row is a "completed" attempt, use total submissions
-        // as the completion proxy unless you track partial submissions separately.
         $completionRate = $totalPlayers > 0
             ? round($results->where('total_questions', '>', 0)->count() / $totalPlayers * 100)
             : 0;
     
-        // ── Score distribution bands ───────────────────────────────
         $scoreBand90      = 0;
         $scoreBand70      = 0;
         $scoreBand50      = 0;
@@ -373,29 +366,18 @@ class QuizController extends Controller
             else                 $scoreBandBelow50++;
         }
     
-        // ── Leaderboard collection (with rank & player_name) ───────
         $leaderboard = $results->values()->map(function ($row, $index) {
             $row->rank        = $index + 1;
             $row->player_name = $row->user?->first_name . " " . $row->user?->last_name ?? 'Unknown Player';
             return $row;
         });
     
-        // ── Per-question accuracy ──────────────────────────────────
-        // QuizResult does NOT store per-answer breakdown in the current schema,
-        // so we derive accuracy from correct_count distributed evenly as a
-        // best-effort approximation, OR you can join a quiz_answers table if
-        // you have one. The structure below is ready to accept a real answers
-        // table — just swap the placeholder logic.
+    
         $questions     = $quiz->questions;
         $questionStats = [];
     
         foreach ($questions as $idx => $question) {
-            // ── If you have a QuizAnswer model with (quiz_result_id, question_id, is_correct):
-            // $correctCount = \App\Models\QuizAnswer::where('question_id', $question->id)
-            //     ->where('is_correct', true)->count();
-            // $totalCount   = \App\Models\QuizAnswer::where('question_id', $question->id)->count();
-    
-            // ── Fallback: use aggregate correct_count / total_questions ratio ──
+
             $totalCount   = $totalPlayers;
             $correctCount = $totalPlayers > 0
                 ? round($results->avg(fn($r) => $r->total_questions > 0
@@ -483,17 +465,7 @@ class QuizController extends Controller
             'Content-Type' => 'text/csv',
         ]);
     }
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $quiz = Quiz::find($id);
@@ -501,23 +473,6 @@ class QuizController extends Controller
 
         return view("edit-quiz", compact("quiz", "questions"));
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
     
     function generateRoomCode()
     {

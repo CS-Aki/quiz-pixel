@@ -169,11 +169,9 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '#startQuizBtn', function () {
-        // Host posts to server to broadcast the event
         $.post('/lobby/' + quizCode + '/start')
-            .done(function () {
-                // Host redirects immediately themselves
-                window.location.href = '/quiz-answer?quizCode=' + encodeURIComponent(quizCode);
+            .done(function (response) {
+                window.location.href = '/quiz/' + response.quiz_id + '/results';
             })
             .fail(function (err) {
                 console.error('Failed to start quiz:', err);

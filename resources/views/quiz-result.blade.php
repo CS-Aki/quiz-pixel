@@ -53,7 +53,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-slate-400 font-medium">Total Players</p>
-                            <p class="text-xl font-bold text-slate-800">{{ $totalPlayers }}</p>
+                            <p id="statTotalPlayers" class="text-xl font-bold text-slate-800">{{ $totalPlayers }}</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-xl p-4 shadow-sm flex items-center gap-3">
@@ -62,7 +62,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-slate-400 font-medium">Avg. Score</p>
-                            <p class="text-xl font-bold text-slate-800">{{ $avgScore }}%</p>
+                            <p id="statAvgScore" class="text-xl font-bold text-slate-800">{{ $avgScore }}%</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-xl p-4 shadow-sm flex items-center gap-3">
@@ -71,7 +71,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-slate-400 font-medium">Highest Score</p>
-                            <p class="text-xl font-bold text-slate-800">{{ $highestScore }} pts</p>
+                            <p id="statHighestScore" class="text-xl font-bold text-slate-800">{{ $highestScore }} pts</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-xl p-4 shadow-sm flex items-center gap-3">
@@ -103,42 +103,43 @@
                         <div class="flex items-end justify-center gap-3 px-6 pt-6 pb-4">
                             {{-- 2nd --}}
                             @php $second = $leaderboard[1]; @endphp
-                            <div class="flex-1 flex flex-col items-center gap-1">
-                                <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-sm font-black text-slate-500 border-2 border-slate-300">
+                            <div id="podium2nd" class="flex-1 flex flex-col items-center gap-1">
+                                <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-sm font-black text-slate-500 border-2 border-slate-300 podium-initials">
                                     {{ strtoupper(substr($second->player_name, 0, 2)) }}
                                 </div>
-                                <p class="text-xs font-semibold text-slate-700 truncate max-w-[80px] text-center">{{ $second->player_name }}</p>
-                                <p class="text-sm font-black text-slate-800">{{ $second->score }} pts</p>
+                                <p class="text-xs font-semibold text-slate-700 truncate max-w-[80px] text-center podium-name">{{ $second->player_name }}</p>
+                                <p class="text-sm font-black text-slate-800 podium-score">{{ $second->score }} pts</p>
                                 <div class="w-full bg-slate-100 rounded-t-lg h-14 flex items-center justify-center">
                                     <span class="text-lg font-black text-slate-400">2</span>
                                 </div>
                             </div>
+
                             {{-- 1st --}}
                             @php $first = $leaderboard[0]; @endphp
-                            <div class="flex-1 flex flex-col items-center gap-1">
+                            <div id="podium1st" class="flex-1 flex flex-col items-center gap-1">
                                 <span class="text-lg">👑</span>
-                                <div class="w-12 h-12 rounded-full bg-yellow-400 flex items-center justify-center text-sm font-black text-white border-2 border-yellow-500 shadow-md">
+                                <div class="w-12 h-12 rounded-full bg-yellow-400 flex items-center justify-center text-sm font-black text-white border-2 border-yellow-500 shadow-md podium-initials">
                                     {{ strtoupper(substr($first->player_name, 0, 2)) }}
                                 </div>
-                                <p class="text-xs font-semibold text-slate-700 truncate max-w-[80px] text-center">{{ $first->player_name }}</p>
-                                <p class="text-sm font-black text-[#2979FF]">{{ $first->score }} pts</p>
+                                <p class="text-xs font-semibold text-slate-700 truncate max-w-[80px] text-center podium-name">{{ $first->player_name }}</p>
+                                <p class="text-sm font-black text-[#2979FF] podium-score">{{ $first->score }} pts</p>
                                 <div class="w-full bg-yellow-100 rounded-t-lg h-20 flex items-center justify-center">
                                     <span class="text-2xl font-black text-yellow-500">1</span>
                                 </div>
                             </div>
+
                             {{-- 3rd --}}
                             @php $third = $leaderboard[2]; @endphp
-                            <div class="flex-1 flex flex-col items-center gap-1">
-                                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-500 border-2 border-orange-200">
+                            <div id="podium3rd" class="flex-1 flex flex-col items-center gap-1">
+                                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-500 border-2 border-orange-200 podium-initials">
                                     {{ strtoupper(substr($third->player_name, 0, 2)) }}
                                 </div>
-                                <p class="text-xs font-semibold text-slate-700 truncate max-w-[80px] text-center">{{ $third->player_name }}</p>
-                                <p class="text-sm font-black text-slate-800">{{ $third->score }} pts</p>
+                                <p class="text-xs font-semibold text-slate-700 truncate max-w-[80px] text-center podium-name">{{ $third->player_name }}</p>
+                                <p class="text-sm font-black text-slate-800 podium-score">{{ $third->score }} pts</p>
                                 <div class="w-full bg-orange-50 rounded-t-lg h-10 flex items-center justify-center">
                                     <span class="text-base font-black text-orange-400">3</span>
                                 </div>
                             </div>
-                        </div>
                         @endif
 
                         {{-- Full rank list --}}
@@ -151,46 +152,50 @@
                                 <div class="col-span-2 text-center">Time</div>
                             </div>
 
-                            @foreach ($leaderboard as $index => $entry)
-                                @php
-                                    $rank = $index + 1;
-                                    $scorePercent = $entry->total_questions > 0
-                                        ? round(($entry->correct_count / $entry->total_questions) * 100)
-                                        : 0;
-                                    $scoreBg = match(true) {
-                                        $scorePercent >= 80 => 'bg-green-100 text-green-700',
-                                        $scorePercent >= 50 => 'bg-yellow-100 text-yellow-700',
-                                        default             => 'bg-red-100 text-red-600',
-                                    };
-                                @endphp
-                                <div class="grid grid-cols-12 items-center px-6 py-3 hover:bg-slate-50 transition {{ $rank <= 3 ? 'bg-slate-50/50' : '' }}">
-                                    <div class="col-span-1 text-center">
-                                        @if($rank === 1) <span>🥇</span>
-                                        @elseif($rank === 2) <span>🥈</span>
-                                        @elseif($rank === 3) <span>🥉</span>
-                                        @else <span class="text-xs text-slate-400">{{ $rank }}</span>
-                                        @endif
-                                    </div>
-                                    <div class="col-span-5 flex items-center gap-2.5 min-w-0">
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-[#2979FF] shrink-0">
-                                            {{ strtoupper(substr($entry->player_name, 0, 2)) }}
+                            <div id="leaderboardList">  {{-- ← add this wrapper --}}
+                                @foreach ($leaderboard as $index => $entry)
+                                    @php
+                                        $rank = $index + 1;
+                                        $scorePercent = $entry->total_questions > 0
+                                            ? round(($entry->correct_count / $entry->total_questions) * 100)
+                                            : 0;
+                                        $scoreBg = match(true) {
+                                            $scorePercent >= 80 => 'bg-green-100 text-green-700',
+                                            $scorePercent >= 50 => 'bg-yellow-100 text-yellow-700',
+                                            default             => 'bg-red-100 text-red-600',
+                                        };
+                                    @endphp
+                                    <div class="leaderboard-row grid grid-cols-12 items-center px-6 py-3 hover:bg-slate-50 transition {{ $rank <= 3 ? 'bg-slate-50/50' : '' }}"
+                                        data-player-name="{{ strtolower($entry->player_name) }}"
+                                        data-score="{{ $entry->score }}">
+                                        <div class="col-span-1 text-center lb-rank-cell">
+                                            @if($rank === 1) <span>🥇</span>
+                                            @elseif($rank === 2) <span>🥈</span>
+                                            @elseif($rank === 3) <span>🥉</span>
+                                            @else <span class="text-xs text-slate-400">{{ $rank }}</span>
+                                            @endif
                                         </div>
-                                        <p class="text-sm font-semibold text-slate-700 truncate">{{ $entry->player_name }}</p>
+                                        <div class="col-span-5 flex items-center gap-2.5 min-w-0">
+                                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-[#2979FF] shrink-0 lb-initials">
+                                                {{ strtoupper(substr($entry->player_name, 0, 2)) }}
+                                            </div>
+                                            <p class="text-sm font-semibold text-slate-700 truncate lb-name">{{ $entry->player_name }}</p>
+                                        </div>
+                                        <div class="col-span-2 text-center lb-score">
+                                            <span class="text-sm font-black text-slate-800">{{ $entry->score }}</span>
+                                            <span class="text-xs text-slate-400"> pts</span>
+                                        </div>
+                                        <div class="col-span-2 text-center lb-correct">
+                                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $scoreBg }}">
+                                                {{ $entry->correct_count }}/{{ $entry->total_questions }}
+                                            </span>
+                                        </div>
+                                        <div class="col-span-2 text-center text-xs text-slate-400 font-medium lb-time">
+                                            {{ gmdate('i:s', $entry->time_taken_seconds ?? 0) }}
+                                        </div>
                                     </div>
-                                    <div class="col-span-2 text-center">
-                                        <span class="text-sm font-black text-slate-800">{{ $entry->score }}</span>
-                                        <span class="text-xs text-slate-400"> pts</span>
-                                    </div>
-                                    <div class="col-span-2 text-center">
-                                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $scoreBg }}">
-                                            {{ $entry->correct_count }}/{{ $entry->total_questions }}
-                                        </span>
-                                    </div>
-                                    <div class="col-span-2 text-center text-xs text-slate-400 font-medium">
-                                        {{ gmdate('i:s', $entry->time_taken_seconds ?? 0) }}
-                                    </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>  {{-- ← close leaderboardList --}}
                         </div>
                     </div>
 
@@ -203,21 +208,24 @@
                             <div class="space-y-2.5">
                                 @php
                                     $bands = [
-                                        ['label' => '90–100%',   'count' => $scoreBand90,      'color' => 'bg-green-500'],
-                                        ['label' => '70–89%',    'count' => $scoreBand70,      'color' => 'bg-blue-400'],
-                                        ['label' => '50–69%',    'count' => $scoreBand50,      'color' => 'bg-yellow-400'],
-                                        ['label' => 'Below 50%', 'count' => $scoreBandBelow50, 'color' => 'bg-red-400'],
+                                        ['label' => '90–100%',   'count' => $scoreBand90,      'color' => 'bg-green-500',  'id' => 'band90'],
+                                        ['label' => '70–89%',    'count' => $scoreBand70,      'color' => 'bg-blue-400',   'id' => 'band70'],
+                                        ['label' => '50–69%',    'count' => $scoreBand50,      'color' => 'bg-yellow-400', 'id' => 'band50'],
+                                        ['label' => 'Below 50%', 'count' => $scoreBandBelow50, 'color' => 'bg-red-400',    'id' => 'bandBelow'],
                                     ];
                                     $maxBand = max(array_column($bands, 'count')) ?: 1;
                                 @endphp
+
                                 @foreach($bands as $band)
                                 <div class="flex items-center gap-3">
                                     <span class="text-xs text-slate-400 font-medium w-16 shrink-0 text-right">{{ $band['label'] }}</span>
                                     <div class="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                                        <div class="{{ $band['color'] }} h-full rounded-full"
+                                        <div class="{{ $band['color'] }} band-bar h-full rounded-full"
                                             style="width: {{ round(($band['count'] / $maxBand) * 100) }}%"></div>
                                     </div>
-                                    <span class="text-xs font-bold text-slate-600 w-4 shrink-0">{{ $band['count'] }}</span>
+                                    <span id="{{ $band['id'] }}" class="text-xs font-bold text-slate-600 w-4 shrink-0">
+                                        {{ $band['count'] }}
+                                    </span>
                                 </div>
                                 @endforeach
                             </div>
@@ -463,6 +471,14 @@
         </div>
     </div>
 </div>
+
+<script>
+    window.QuizResultConfig = {
+        quizCode: '{{ $quiz->code }}',
+        quizId:   '{{ $quiz->id }}',
+        totalQuestions: {{ $quiz->questions->count() }},
+    };
+</script>
 
 @vite('resources/js/quiz/quiz-result.js')
 @vite('resources/js/user/logout.js')

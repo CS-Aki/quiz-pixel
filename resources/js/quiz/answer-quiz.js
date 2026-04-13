@@ -5,6 +5,8 @@ $(function () {
     let timerInterval = null;
     let timeLeft = 0;
     let answered = false;
+    let submitted = false;
+    let quizStartTime = Date.now();
 
     const questions = window.QUIZ_QUESTIONS || [];
     const total = questions.length;
@@ -33,6 +35,7 @@ $(function () {
     const quizStateKey = `quiz_state_${window.QUIZ_ID}`;
     window.quizAnswers = {};
 
+    // ── State persistence ────────────────────────────────────────
     function saveQuizState(extra = {}) {
         const state = {
             currentIndex,
@@ -44,15 +47,12 @@ $(function () {
             ...extra,
             savedAt: Date.now()
         };
-
         localStorage.setItem(quizStateKey, JSON.stringify(state));
     }
 
     function loadQuizState() {
         const raw = localStorage.getItem(quizStateKey);
-
         if (!raw) return null;
-
         try {
             return JSON.parse(raw);
         } catch (e) {
@@ -69,6 +69,20 @@ $(function () {
         localStorage.removeItem(quizStateKey + '_done');
     }
 
+    // ── Finish quiz ──────────────────────────────────────────────
+    function finishQuiz() {
+        stopTimer();
+        clearQuizState();
+
+        if ($questionCard.length) {
+            $questionCard.remove();
+        }
+
+        showSummary();
+        doSubmit();
+    }
+
+    // ── Init ─────────────────────────────────────────────────────
     renderLeaderboard(window.INITIAL_LEADERBOARD || []);
     setupPusherLeaderboard();
 
@@ -94,7 +108,6 @@ $(function () {
         }
     } else {
         const savedState = loadQuizState();
-
         if (savedState && savedState.currentIndex < total) {
             currentIndex = savedState.currentIndex ?? 0;
             score = savedState.score ?? 0;
@@ -102,43 +115,44 @@ $(function () {
             timeLeft = savedState.timeLeft ?? (questions[currentIndex]?.time || 30);
             answered = savedState.answered ?? false;
             window.quizAnswers = savedState.answers || {};
-
             loadQuestion(currentIndex, true);
         } else {
             loadQuestion(0, false);
         }
     }
 
+    // ── Next button ──────────────────────────────────────────────
     $nextBtn.on('click', function () {
         stopTimer();
+
+        const isLastQuestion = currentIndex === total - 1;
+        if (isLastQuestion) {
+            finishQuiz();
+            return;
+        }
 
         currentIndex++;
         answered = false;
 
-        saveQuizState({
-            currentIndex,
-            answered: false,
-            timeLeft: questions[currentIndex]?.time || 30
-        });
-
         if (currentIndex < total) {
+            saveQuizState({
+                currentIndex,
+                answered: false,
+                timeLeft: questions[currentIndex]?.time || 30
+            });
             loadQuestion(currentIndex, false);
-        } else {
-            clearQuizState();
-            clearDoneState();
-            $questionCard.remove();
-            showSummary();
         }
     });
 
+    // ── Choice click ─────────────────────────────────────────────
     $(document).on('click', '.choice-option', function () {
         if (answered) return;
-
         const selected = $(this).data('choice');
         const q = questions[currentIndex];
         handleAnswer(selected, q);
     });
 
+    // ── Load question ────────────────────────────────────────────
     function loadQuestion(index, restored = false) {
         const q = questions[index];
         const savedAnswer = window.quizAnswers[index] || null;
@@ -158,7 +172,6 @@ $(function () {
 
         $.each(q.choices, function (_, choice) {
             if (!choice.text) return;
-
             $choicesContainer.append(`
                 <button type="button"
                     class="choice-option text-left flex items-center gap-3 p-4 border-2 border-slate-100 rounded-2xl hover:border-[#2979FF]/40 hover:shadow-md transition-all duration-200 bg-white"
@@ -173,7 +186,7 @@ $(function () {
 
         $feedbackBanner.addClass('hidden');
         $nextBtnWrapper.addClass('hidden');
-        $nextBtn.text(index + 1 < total ? 'Next Question →' : 'Displaying Result...');
+        $nextBtn.text(index + 1 < total ? 'Next Question →' : 'Display Result');
 
         if (restored && savedAnswer) {
             answered = true;
@@ -185,15 +198,12 @@ $(function () {
         }
 
         answered = false;
-
         const secondsToUse = restored ? (timeLeft || q.time || 30) : (q.time || 30);
         startTimer(secondsToUse);
-        saveQuizState({
-            answered: false,
-            timeLeft: secondsToUse
-        });
+        saveQuizState({ answered: false, timeLeft: secondsToUse });
     }
 
+    // ── Handle answer ────────────────────────────────────────────
     function handleAnswer(selected, q) {
         if (answered) return;
 
@@ -207,7 +217,6 @@ $(function () {
             score += q.points * timeBonus;
             correctCount++;
         }
-        
 
         window.quizAnswers[currentIndex] = {
             selected,
@@ -220,16 +229,20 @@ $(function () {
 
         $('#liveScore').text(score);
         $('#liveCorrect').text(correctCount);
-        $nextBtnWrapper.removeClass('hidden');
 
-        saveQuizState({
-            answered: true,
-            timeLeft: 0
-        });
+        saveQuizState({ answered: true, timeLeft: 0 });
 
-        submitResults();
+        const isLastQuestion = currentIndex === total - 1;
+
+        if (isLastQuestion) {
+            finishQuiz();
+        } else {
+            $nextBtnWrapper.removeClass('hidden');
+            doMidSubmit();
+        }
     }
 
+    // ── Apply answer UI ──────────────────────────────────────────
     function applySavedAnswerUI(savedAnswer, q) {
         $('.choice-option').each(function () {
             const $el = $(this);
@@ -252,6 +265,7 @@ $(function () {
 
         $feedbackBanner.removeClass('hidden');
         const timeBonus = Math.max(timeLeft, 0.5);
+
         if (savedAnswer.timedOut) {
             $feedbackInner.attr('class', 'flex items-center gap-3 rounded-2xl px-4 py-4 bg-amber-50 border border-amber-200');
             $feedbackIcon.attr('class', 'w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 bg-amber-500 text-white text-sm font-bold').text('!');
@@ -270,9 +284,9 @@ $(function () {
         }
     }
 
+    // ── Timer ────────────────────────────────────────────────────
     function startTimer(seconds) {
         stopTimer();
-
         timeLeft = seconds || 30;
         updateTimerDisplay();
         saveQuizState();
@@ -284,10 +298,7 @@ $(function () {
 
             if (timeLeft <= 0) {
                 stopTimer();
-
-                if (!answered) {
-                    timeUp();
-                }
+                if (!answered) timeUp();
             }
         }, 1000);
     }
@@ -324,29 +335,32 @@ $(function () {
 
         applySavedAnswerUI(window.quizAnswers[currentIndex], q);
 
-        $nextBtnWrapper.removeClass('hidden');
+        saveQuizState({ answered: true, timeLeft: 0 });
 
-        saveQuizState({
-            answered: true,
-            timeLeft: 0
-        });
+        const isLastQuestion = currentIndex === total - 1;
+
+        if (isLastQuestion) {
+            finishQuiz();
+        } else {
+            $nextBtnWrapper.removeClass('hidden');
+            doMidSubmit();
+        }
     }
 
+    // ── Show summary ─────────────────────────────────────────────
     function showSummary() {
-        const timeBonus = Math.max(timeLeft, 0.5);
-        let temp = timeBonus * score;
+        $('#progressSection').addClass('hidden');
+
+        const percent = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+        const roundedFinalScore = Math.round(score);
+
         localStorage.setItem(quizStateKey + '_done', JSON.stringify({
-            temp,
+            score: roundedFinalScore,
             correctCount,
             total
         }));
 
-        $('#progressSection').addClass('hidden');
-        $('#quizStats .bg-white').first().removeClass('hidden');
-
-        const percent = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-        
-        $finalScore.text(temp);
+        $finalScore.text(roundedFinalScore);
         $finalCorrect.text(`${correctCount}/${total}`);
         $finalPercent.text(`${percent}%`);
 
@@ -362,42 +376,64 @@ $(function () {
         }
 
         $scoreSummary.removeClass('hidden');
-        clearQuizState();
-        submitResults();
     }
 
-    function submitResults() {
-        const timeBonus = Math.max(timeLeft, 0.5);
-        
+    // ── Mid-quiz submit (live leaderboard, no guard) ─────────────
+    function doMidSubmit() {
         $.ajax({
             url: `/quiz/${window.QUIZ_ID}/submit`,
             type: 'POST',
             data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                quiz_id: window.QUIZ_ID,
-                quiz_code: window.QUIZ_CODE,
-                score: score * timeBonus,
-                correct_count: correctCount,
-                total_questions: total
+                _token:              $('meta[name="csrf-token"]').attr('content'),
+                quiz_id:             window.QUIZ_ID,
+                quiz_code:           window.QUIZ_CODE,
+                score:               Math.round(score),
+                correct_count:       correctCount,
+                total_questions:     total,
+                time_taken_seconds:  Math.round((Date.now() - quizStartTime) / 1000),
             },
             success: function (response) {
                 if (response.leaderboard) {
                     renderLeaderboard(response.leaderboard);
                 }
-
-                if (total === currentIndex + 1 && answered) {
-                    $questionCard.remove();
-                    showSummary();
-                }
-
-                console.log('Quiz results submitted:', response);
             },
             error: function (xhr) {
-                console.warn('Could not submit quiz results:', xhr.responseText);
+                console.warn('Mid-quiz submit failed:', xhr.responseText);
             }
         });
     }
 
+    // ── Final submit (guarded, triggers broadcast) ───────────────
+    function doSubmit() {
+        if (submitted) return;
+        submitted = true;
+
+        $.ajax({
+            url: `/quiz/${window.QUIZ_ID}/submit`,
+            type: 'POST',
+            data: {
+                _token:              $('meta[name="csrf-token"]').attr('content'),
+                quiz_id:             window.QUIZ_ID,
+                quiz_code:           window.QUIZ_CODE,
+                score:               Math.round(score),
+                correct_count:       correctCount,
+                total_questions:     total,
+                time_taken_seconds:  Math.round((Date.now() - quizStartTime) / 1000),
+            },
+            success: function (response) {
+                if (response.leaderboard) {
+                    renderLeaderboard(response.leaderboard);
+                }
+                console.log('Final quiz submitted:', response);
+            },
+            error: function (xhr) {
+                submitted = false;
+                console.warn('Final submit failed:', xhr.responseText);
+            }
+        });
+    }
+
+    // ── Pusher leaderboard (answer-quiz page sidebar) ────────────
     function setupPusherLeaderboard() {
         if (typeof Pusher === 'undefined') {
             console.warn('Pusher JS is not loaded.');
@@ -423,6 +459,7 @@ $(function () {
         });
     }
 
+    // ── Render leaderboard sidebar ───────────────────────────────
     function renderLeaderboard(rows) {
         const $list = $('#leaderboardList');
         $list.empty();
@@ -437,24 +474,24 @@ $(function () {
         }
 
         rows.forEach(function (player) {
-            const rank = Number(player.rank);
-            const isTop1 = rank === 1;
-            const isTop2 = rank === 2;
-            const isTop3 = rank === 3;
-            const isMe = Number(player.user_id) === Number(window.AUTH_USER_ID);
+            const rank    = Number(player.rank);
+            const isTop1  = rank === 1;
+            const isTop2  = rank === 2;
+            const isTop3  = rank === 3;
+            const isMe    = Number(player.user_id) === Number(window.AUTH_USER_ID);
 
-            let rowClass = 'bg-slate-50 border border-slate-100';
+            let rowClass   = 'bg-slate-50 border border-slate-100';
             let badgeClass = 'bg-slate-400 text-white';
             let scoreClass = 'text-slate-700';
 
             if (isTop1) {
-                rowClass = 'bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-100';
+                rowClass   = 'bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-100';
                 badgeClass = 'bg-yellow-400 text-white';
                 scoreClass = 'text-amber-600';
             } else if (isTop2) {
                 badgeClass = 'bg-slate-400 text-white';
             } else if (isTop3) {
-                rowClass = 'bg-orange-50 border border-orange-100';
+                rowClass   = 'bg-orange-50 border border-orange-100';
                 badgeClass = 'bg-orange-400 text-white';
                 scoreClass = 'text-orange-600';
             }
@@ -497,6 +534,7 @@ $(function () {
         });
     }
 
+    // ── Escape HTML ──────────────────────────────────────────────
     function escapeHtml(text) {
         return String(text)
             .replaceAll('&', '&amp;')
